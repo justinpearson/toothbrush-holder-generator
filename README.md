@@ -1,5 +1,11 @@
 # Toothbrush Holder Maker
 
+**Live app: https://justinpearson.github.io/toothbrush-holder-generator/**
+
+![The web app](images/app-screenshot.png)
+
+![A 3D-printed toothbrush holder in use](images/printed-holder.jpeg)
+
 A small web app for designing a parametric toothbrush holder. Move sliders to set
 the baseplate size, the number of tubes, and each tube's diameter and height; watch
 the top, side, and 3D views update live; then download an OpenSCAD `.scad` file and a
