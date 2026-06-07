@@ -1,4 +1,6 @@
-# Toothbrush Holder Maker
+# Toothbrush Holder Generator
+
+An app to make a holder for your toothbrush, that you can 3D print.
 
 **Live app: https://justinpearson.github.io/toothbrush-holder-generator/**
 
@@ -9,6 +11,8 @@ _Demo (if the player above doesn't load, [watch `images/demo.mp4`](images/demo.m
 ![The web app](images/app-screenshot.png)
 
 ![A 3D-printed toothbrush holder in use](images/printed-holder.jpeg)
+
+## For A.I.
 
 A small web app for designing a parametric toothbrush holder. Move sliders to set
 the baseplate size, the number of tubes, and each tube's diameter and height; watch
