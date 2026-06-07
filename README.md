@@ -4,9 +4,9 @@ An app to make a holder for your toothbrush, that you can 3D print.
 
 **Live app: https://justinpearson.github.io/toothbrush-holder-generator/**
 
-<video src="images/demo.mp4" controls muted loop playsinline width="100%"></video>
+[![Demo of the app](images/demo.gif)](images/demo.mp4)
 
-_Demo (if the player above doesn't load, [watch `images/demo.mp4`](images/demo.mp4)):_
+_Click the demo above to watch the full-quality video ([`images/demo.mp4`](images/demo.mp4))._
 
 ![The web app](images/app-screenshot.png)
 
