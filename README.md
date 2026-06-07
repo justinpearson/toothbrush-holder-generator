@@ -2,6 +2,10 @@
 
 **Live app: https://justinpearson.github.io/toothbrush-holder-generator/**
 
+<video src="images/demo.mp4" controls muted loop playsinline width="100%"></video>
+
+_Demo (if the player above doesn't load, [watch `images/demo.mp4`](images/demo.mp4)):_
+
 ![The web app](images/app-screenshot.png)
 
 ![A 3D-printed toothbrush holder in use](images/printed-holder.jpeg)

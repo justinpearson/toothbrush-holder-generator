@@ -11,6 +11,15 @@ test('renders all three views', async ({ page }) => {
   await expect(page.getByTestId('three-view').locator('canvas')).toBeVisible();
 });
 
+test('links back to the GitHub repo', async ({ page }) => {
+  const link = page.getByRole('link', { name: /view on github/i });
+  await expect(link).toBeVisible();
+  await expect(link).toHaveAttribute(
+    'href',
+    'https://github.com/justinpearson/toothbrush-holder-generator',
+  );
+});
+
 test('changing baseplate length resizes the top-view plate', async ({ page }) => {
   const plate = page.getByTestId('top-plate');
   const before = await plate.getAttribute('width');
