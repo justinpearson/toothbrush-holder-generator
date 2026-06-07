@@ -66,6 +66,14 @@ yarn build          # outputs dist/ (base is relative, so it works on any subpat
 
 `dist/` is a static site — host it on GitHub Pages, Netlify, Vercel, or any static host.
 
+### GitHub Pages
+
+This repo deploys to GitHub Pages via `.github/workflows/deploy.yml`: every push to
+`main` builds the app and publishes `dist/`. For it to run, set the repository's
+**Settings → Pages → Source** to **GitHub Actions** (not "Deploy from a branch" — a
+branch/root deploy can't build the Vite app). The site is then served at
+`https://<user>.github.io/toothbrush-holder-generator/`.
+
 ## Project layout
 
 ```
