@@ -243,6 +243,78 @@ body {
   letter-spacing: 0.04em;
 }
 
+/* 3D panel header row: caption on the left, filament picker on the right. */
+.view-panel__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.view-panel__bar figcaption {
+  margin-bottom: 0;
+}
+
+/* ---- filament picker ---- */
+.filament {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.filament__label {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.filament__swatches {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.filament__swatch,
+.filament__custom {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 0;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+.filament__swatch.is-selected,
+.filament__custom.is-selected {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+/* Custom-color chip: a rainbow well with a hidden native color input. */
+.filament__custom {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.8rem;
+  background: conic-gradient(
+    from 0deg,
+    #ff0000,
+    #ff7f00,
+    #ffff00,
+    #00ff00,
+    #0000ff,
+    #8b00ff,
+    #ff0000
+  );
+}
+.filament__custom input[type='color'] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  border: none;
+}
+
 .view-svg {
   width: 100%;
   height: auto;

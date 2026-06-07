@@ -3,8 +3,13 @@ import { OrbitControls } from '@react-three/drei';
 import type { HolderParams } from '../../model/types';
 import { HolderScene } from '../three/HolderScene';
 
+interface ThreeDViewProps {
+  params: HolderParams;
+  color: string;
+}
+
 /** Interactive 3D preview. Camera distance scales with the model size. */
-export function ThreeDView({ params }: { params: HolderParams }) {
+export function ThreeDView({ params, color }: ThreeDViewProps) {
   const reach = Math.max(params.baseLength, params.baseDepth, 100);
 
   return (
@@ -17,7 +22,7 @@ export function ThreeDView({ params }: { params: HolderParams }) {
         <ambientLight intensity={0.6} />
         <directionalLight position={[1, 2, 1.5]} intensity={1.1} castShadow />
         <directionalLight position={[-1, 0.5, -1]} intensity={0.3} />
-        <HolderScene params={params} />
+        <HolderScene params={params} color={color} />
         <OrbitControls makeDefault enablePan target={[0, params.baseHeight, 0]} />
       </Canvas>
     </div>

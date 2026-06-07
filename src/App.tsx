@@ -1,19 +1,23 @@
+import { useState } from 'react';
 import { ParameterControls } from './components/ParameterControls/ParameterControls';
 import { TopView } from './components/views/TopView';
 import { SideView } from './components/views/SideView';
 import { ThreeDView } from './components/views/ThreeDView';
+import { FilamentPicker } from './components/FilamentPicker';
 import { DownloadBar } from './components/DownloadBar';
 import { useHolderParams } from './state/useHolderParams';
+import { DEFAULT_FILAMENT } from './model/filaments';
 
 export default function App() {
   const controls = useHolderParams();
   const { params } = controls;
+  const [filament, setFilament] = useState(DEFAULT_FILAMENT);
 
   return (
     <div className="app">
       <header className="app__header">
         <div>
-          <h1>Toothbrush Holder Maker</h1>
+          <h1>Toothbrush Holder Generator</h1>
           <p>Design a parametric toothbrush holder, then download a .scad or .stl.</p>
         </div>
         <a
@@ -51,8 +55,11 @@ export default function App() {
             <SideView params={params} />
           </figure>
           <figure className="view-panel view-panel--3d">
-            <figcaption>3D</figcaption>
-            <ThreeDView params={params} />
+            <div className="view-panel__bar">
+              <figcaption>3D</figcaption>
+              <FilamentPicker color={filament} onChange={setFilament} />
+            </div>
+            <ThreeDView params={params} color={filament} />
           </figure>
         </main>
       </div>

@@ -4,7 +4,13 @@ import { Baseplate } from './Baseplate';
 import { Tube } from './Tube';
 
 /** The whole holder, centered at the world origin for orbit framing. */
-export function HolderScene({ params }: { params: HolderParams }) {
+export function HolderScene({
+  params,
+  color,
+}: {
+  params: HolderParams;
+  color: string;
+}) {
   const tubes = deriveTubes(params);
   // Recenter so the model sits around the origin (it is modeled in the +X/+Y/+Z octant).
   const center: [number, number, number] = [
@@ -15,7 +21,7 @@ export function HolderScene({ params }: { params: HolderParams }) {
 
   return (
     <group position={center}>
-      <Baseplate params={params} />
+      <Baseplate params={params} color={color} />
       {tubes.map((tube) => (
         <Tube
           key={tube.id}
@@ -23,6 +29,7 @@ export function HolderScene({ params }: { params: HolderParams }) {
           wallThickness={params.wallThickness}
           baseTop={params.baseHeight}
           fn={params.fn}
+          color={color}
         />
       ))}
     </group>

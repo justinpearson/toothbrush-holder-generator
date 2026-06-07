@@ -8,10 +8,11 @@ interface TubeProps {
   wallThickness: number;
   baseTop: number;
   fn: number;
+  color: string;
 }
 
 /** One hollow blind tube, built as a revolved (lathe) solid. */
-export function Tube({ tube, wallThickness, baseTop, fn }: TubeProps) {
+export function Tube({ tube, wallThickness, baseTop, fn, color }: TubeProps) {
   const geometry = useMemo(() => {
     const profile = buildTubeProfile({
       outerDiameter: tube.outerDiameter,
@@ -28,7 +29,7 @@ export function Tube({ tube, wallThickness, baseTop, fn }: TubeProps) {
       castShadow
       receiveShadow
     >
-      <meshStandardMaterial color="#e6b422" side={THREE.DoubleSide} />
+      <meshStandardMaterial color={color} side={THREE.DoubleSide} />
     </mesh>
   );
 }

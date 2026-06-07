@@ -11,6 +11,14 @@ test('renders all three views', async ({ page }) => {
   await expect(page.getByTestId('three-view').locator('canvas')).toBeVisible();
 });
 
+test('filament picker selects a preview color', async ({ page }) => {
+  const picker = page.getByTestId('filament-picker');
+  await expect(picker).toBeVisible();
+  const green = picker.getByRole('button', { name: 'Green' });
+  await green.click();
+  await expect(green).toHaveAttribute('aria-pressed', 'true');
+});
+
 test('links back to the GitHub repo', async ({ page }) => {
   const link = page.getByRole('link', { name: /view on github/i });
   await expect(link).toBeVisible();
