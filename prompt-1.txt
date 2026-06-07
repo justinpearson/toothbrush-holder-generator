@@ -1,0 +1,64 @@
+I was really pleased that Claude Code could make me a 3d model of a toothbrush holder!
+
+Check out the folder
+
+/Users/justin/Desktop/toothbrush-holder-3d-model-maker/toothbrush-holder-3d-model
+
+It read my schematic 
+
+/Users/justin/Desktop/toothbrush-holder-3d-model-maker/toothbrush-holder-3d-model/toothbrush-holder-schematic/toothbrush-holder-schematic.001.jpeg
+
+and made me a .scad file
+
+/Users/justin/Desktop/toothbrush-holder-3d-model-maker/toothbrush-holder-3d-model/toothbrush-holder.scad
+
+then used my OpenSCAD app
+
+/Applications/OpenSCAD.app
+
+to convert it into an .stl file
+
+/Users/justin/Desktop/toothbrush-holder-3d-model-maker/toothbrush-holder-3d-model/toothbrush-holder.stl
+
+as well as make a nice preview
+
+/Users/justin/Desktop/toothbrush-holder-3d-model-maker/toothbrush-holder-3d-model/toothbrush-holder-preview.png
+
+I then imported the .stl into a new Bambu Studio project
+
+/Users/justin/Desktop/toothbrush-holder-3d-model-maker/toothbrush-holder-3d-model/toothbrush-holder.3mf
+
+and the Bambu Studio slicer then sliced it into gcode
+
+/Users/justin/Desktop/toothbrush-holder-3d-model-maker/toothbrush-holder-3d-model/toothbrush-holder-v1.gcode.3mf
+
+which I put on my Bambu P1S's micro-sd card, and printed it!
+
+NOW, i'd like to help other people make their own toothbrush holders.
+
+So let's make a web app where people can specify their own toothbrush holder, and the app creates a .scad file for them. Maybe we can also export a .stl, if we can figure out how OpenSCAD converts from .scad to .stl, by examining its code, which I cloned here:
+
+/Users/justin/Desktop/toothbrush-holder-3d-model-maker/openscad-master
+
+The user should be able to view the top-down, side view, and 3d-rendered view of the toothbrush holder.
+
+If you see the picture or the .scad file
+
+/Users/justin/Desktop/toothbrush-holder-3d-model-maker/toothbrush-holder-3d-model/toothbrush-holder-schematic/toothbrush-holder-schematic.001.jpeg
+
+/Users/justin/Desktop/toothbrush-holder-3d-model-maker/toothbrush-holder-3d-model/toothbrush-holder.scad
+
+you'll see that there's only a few "degrees of freedom" that the user can pick:
+
+- how many tubes
+- tube diameter (may vary btwn tubes)
+- tube wall thickness (same for all)
+- tube height (may vary btwn tubes)
+- baseplate width, depth, height
+
+So the user should be able to slide simple sliders to vary those, and see the schematic change in real time.
+
+A minor point: to start out, we don't need to support holes going all the way through, the "drain_through_base" variable in the scad file. We can assume the holes do NOT drain thru the base.
+
+Take a look around and let's discuss our options!
+
