@@ -1,0 +1,10 @@
+TODO
+====
+
+- Regenerate README hero image (images/app-screenshot.png): it still shows the
+  old "Toothbrush Holder Maker" title and the UI before the filament color
+  picker was added.
+
+- Regenerate README demo (images/demo.gif and images/demo.mp4): same — recorded
+  before the rename to "Toothbrush Holder Generator" and before the filament
+  color picker existed.
