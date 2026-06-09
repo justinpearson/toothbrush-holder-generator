@@ -1,7 +1,7 @@
-import { deriveTubes } from '../../model/derive';
+import { deriveObjects } from '../../model/derive';
 import type { HolderParams } from '../../model/types';
 import { Baseplate } from './Baseplate';
-import { Tube } from './Tube';
+import { ObjectMesh } from './ObjectMesh';
 
 /** The whole holder, centered at the world origin for orbit framing. */
 export function HolderScene({
@@ -11,8 +11,8 @@ export function HolderScene({
   params: HolderParams;
   color: string;
 }) {
-  const tubes = deriveTubes(params);
-  // Recenter so the model sits around the origin (it is modeled in the +X/+Y/+Z octant).
+  const objects = deriveObjects(params);
+  // Recenter so the model sits around the origin (it is modeled in +X/+Y/+Z).
   const center: [number, number, number] = [
     -params.baseLength / 2,
     0,
@@ -22,13 +22,11 @@ export function HolderScene({
   return (
     <group position={center}>
       <Baseplate params={params} color={color} />
-      {tubes.map((tube) => (
-        <Tube
-          key={tube.id}
-          tube={tube}
-          wallThickness={params.wallThickness}
+      {objects.map((object) => (
+        <ObjectMesh
+          key={object.id}
+          object={object}
           baseTop={params.baseHeight}
-          fn={params.fn}
           color={color}
         />
       ))}

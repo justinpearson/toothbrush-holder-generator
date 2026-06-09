@@ -15,14 +15,38 @@ import * as THREE from 'three';
 import { STLExporter } from 'three/examples/jsm/exporters/STLExporter.js';
 import { buildSceneGeometry } from '../src/geometry/buildSceneGeometry';
 import { generateScad } from '../src/export/scadGenerator';
-import { DEFAULT_PARAMS } from '../src/model/defaults';
+import { DEFAULT_PARAMS, DEFAULT_SHAPE_PARAMS } from '../src/model/defaults';
+import type { HolderObject, HolderParams } from '../src/model/types';
 
 const OPENSCAD = '/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD';
 const here = dirname(fileURLToPath(import.meta.url));
 const out = resolve(here, '../verify-output');
 mkdirSync(out, { recursive: true });
 
-const params = DEFAULT_PARAMS;
+// One model exercising every shape kind and both solid/tube.
+function obj(overrides: Partial<HolderObject>): HolderObject {
+  return {
+    id: overrides.id ?? 'o',
+    shape: 'circle',
+    shapeParams: { ...DEFAULT_SHAPE_PARAMS },
+    solid: false,
+    diameter: null,
+    height: null,
+    wallThickness: null,
+    ...overrides,
+  };
+}
+
+const params: HolderParams = {
+  ...DEFAULT_PARAMS,
+  globals: { diameter: 48, height: 30, wallThickness: 4 },
+  objects: [
+    obj({ id: 'circle-tube', shape: 'circle', solid: false }),
+    obj({ id: 'square-solid', shape: 'polygon', solid: true, shapeParams: { ...DEFAULT_SHAPE_PARAMS, sides: 4 } }),
+    obj({ id: 'hexagon-tube', shape: 'polygon', solid: false, shapeParams: { ...DEFAULT_SHAPE_PARAMS, sides: 6 } }),
+    obj({ id: 'star-solid', shape: 'star', solid: true, shapeParams: { ...DEFAULT_SHAPE_PARAMS, points: 5, pointDepth: 0.45 } }),
+  ],
+};
 
 // 1. Our STL, straight from the three.js geometry.
 const geometry = buildSceneGeometry(params);
@@ -90,7 +114,7 @@ function size(s: StlStats): [number, number, number] {
 const fmt = (n: number) => n.toFixed(2);
 const fmt3 = (a: number[]) => `[${a.map(fmt).join(', ')}]`;
 
-console.log('\n=== STL cross-check (default model) ===\n');
+console.log('\n=== STL cross-check (circle tube / square solid / hexagon tube / star solid) ===\n');
 console.log('                 ours (three.js)      openscad (.scad)');
 console.log(`triangles        ${String(ours.triangles).padEnd(20)} ${theirs.triangles}`);
 console.log(`bbox size mm     ${fmt3(size(ours)).padEnd(20)} ${fmt3(size(theirs))}`);
@@ -107,7 +131,7 @@ console.log(
 );
 
 // ---- render both STLs to PNG with an identical camera -----------------------
-const cam = `${params.baseLength},${params.baseDepth},${params.baseHeight},55,25,0,520`;
+const cam = `${params.baseLength / 2},${params.baseDepth / 2},${params.baseHeight},55,0,25,${params.baseLength * 1.7}`;
 function render(stlFile: string, pngFile: string) {
   const wrapper = resolve(out, `wrap-${pngFile}.scad`);
   writeFileSync(wrapper, `import("${stlFile}");\n`);

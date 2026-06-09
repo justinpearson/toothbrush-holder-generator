@@ -1,98 +1,132 @@
 import { useCallback, useState } from 'react';
-import { DEFAULT_PARAMS, newTube } from '../model/defaults';
+import { DEFAULT_PARAMS, newObject } from '../model/defaults';
 import { LIMITS } from '../model/constraints';
-import type { HolderParams, TubeParams } from '../model/types';
+import { effective } from '../model/resolve';
+import type {
+  HolderObject,
+  HolderParams,
+  ShapeKind,
+  ShapeParams,
+  SizeKey,
+} from '../model/types';
 
 export interface HolderControls {
   params: HolderParams;
   setBase: (key: 'baseLength' | 'baseDepth' | 'baseHeight', value: number) => void;
-  setWallThickness: (value: number) => void;
-  setFn: (value: number) => void;
-  setTube: (id: string, key: keyof Omit<TubeParams, 'id'>, value: number) => void;
-  addTube: () => void;
-  removeTube: (id: string) => void;
-  setTubeCount: (count: number) => void;
+  setGlobal: (key: SizeKey, value: number) => void;
+  setObjectCount: (count: number) => void;
+  addObject: () => void;
+  removeObject: (id: string) => void;
+  setObjectShape: (id: string, shape: ShapeKind) => void;
+  setObjectSolid: (id: string, solid: boolean) => void;
+  setShapeParam: (id: string, key: keyof ShapeParams, value: number) => void;
+  /** value = a number to override, or null to inherit the global default. */
+  setOverride: (id: string, key: SizeKey, value: number | null) => void;
   reset: () => void;
 }
 
-/** Single source of truth for the holder parameters. */
 export function useHolderParams(
   initial: HolderParams = DEFAULT_PARAMS,
 ): HolderControls {
   const [params, setParams] = useState<HolderParams>(initial);
 
-  const setBase = useCallback(
-    (key: 'baseLength' | 'baseDepth' | 'baseHeight', value: number) => {
-      setParams((p) => ({ ...p, [key]: value }));
-    },
-    [],
-  );
-
-  const setWallThickness = useCallback((value: number) => {
-    setParams((p) => ({ ...p, wallThickness: value }));
-  }, []);
-
-  const setFn = useCallback((value: number) => {
-    setParams((p) => ({ ...p, fn: value }));
-  }, []);
-
-  const setTube = useCallback(
-    (id: string, key: keyof Omit<TubeParams, 'id'>, value: number) => {
+  const patchObject = useCallback(
+    (id: string, patch: (o: HolderObject) => HolderObject) => {
       setParams((p) => ({
         ...p,
-        tubes: p.tubes.map((t) => (t.id === id ? { ...t, [key]: value } : t)),
+        objects: p.objects.map((o) => (o.id === id ? patch(o) : o)),
       }));
     },
     [],
   );
 
-  const addTube = useCallback(() => {
-    setParams((p) =>
-      p.tubes.length >= LIMITS.tubeCount.max
-        ? p
-        : { ...p, tubes: [...p.tubes, newTube()] },
-    );
-  }, []);
+  const setBase = useCallback(
+    (key: 'baseLength' | 'baseDepth' | 'baseHeight', value: number) =>
+      setParams((p) => ({ ...p, [key]: value })),
+    [],
+  );
 
-  const removeTube = useCallback((id: string) => {
-    setParams((p) =>
-      p.tubes.length <= LIMITS.tubeCount.min
-        ? p
-        : { ...p, tubes: p.tubes.filter((t) => t.id !== id) },
-    );
-  }, []);
+  const setGlobal = useCallback(
+    (key: SizeKey, value: number) =>
+      setParams((p) => ({ ...p, globals: { ...p.globals, [key]: value } })),
+    [],
+  );
 
-  const setTubeCount = useCallback((count: number) => {
+  const setObjectCount = useCallback((count: number) => {
     const target = Math.max(
-      LIMITS.tubeCount.min,
-      Math.min(LIMITS.tubeCount.max, Math.round(count)),
+      LIMITS.objectCount.min,
+      Math.min(LIMITS.objectCount.max, Math.round(count)),
     );
     setParams((p) => {
-      if (target === p.tubes.length) return p;
-      if (target < p.tubes.length) {
-        return { ...p, tubes: p.tubes.slice(0, target) };
+      if (target === p.objects.length) return p;
+      if (target < p.objects.length) {
+        return { ...p, objects: p.objects.slice(0, target) };
       }
-      const tubes = [...p.tubes];
-      while (tubes.length < target) {
-        // Clone the last tube's size for a sensible default.
-        const last = tubes[tubes.length - 1];
-        tubes.push(newTube(last?.outerDiameter ?? 42, last?.height ?? 25));
-      }
-      return { ...p, tubes };
+      const objects = [...p.objects];
+      while (objects.length < target) objects.push(newObject());
+      return { ...p, objects };
     });
   }, []);
+
+  const addObject = useCallback(() => {
+    setParams((p) =>
+      p.objects.length >= LIMITS.objectCount.max
+        ? p
+        : { ...p, objects: [...p.objects, newObject()] },
+    );
+  }, []);
+
+  const removeObject = useCallback((id: string) => {
+    setParams((p) =>
+      p.objects.length <= LIMITS.objectCount.min
+        ? p
+        : { ...p, objects: p.objects.filter((o) => o.id !== id) },
+    );
+  }, []);
+
+  const setObjectShape = useCallback(
+    (id: string, shape: ShapeKind) => patchObject(id, (o) => ({ ...o, shape })),
+    [patchObject],
+  );
+
+  const setObjectSolid = useCallback(
+    (id: string, solid: boolean) => patchObject(id, (o) => ({ ...o, solid })),
+    [patchObject],
+  );
+
+  const setShapeParam = useCallback(
+    (id: string, key: keyof ShapeParams, value: number) =>
+      patchObject(id, (o) => ({
+        ...o,
+        shapeParams: { ...o.shapeParams, [key]: value },
+      })),
+    [patchObject],
+  );
+
+  const setOverride = useCallback(
+    (id: string, key: SizeKey, value: number | null) =>
+      patchObject(id, (o) => ({ ...o, [key]: value })),
+    [patchObject],
+  );
 
   const reset = useCallback(() => setParams(initial), [initial]);
 
   return {
     params,
     setBase,
-    setWallThickness,
-    setFn,
-    setTube,
-    addTube,
-    removeTube,
-    setTubeCount,
+    setGlobal,
+    setObjectCount,
+    addObject,
+    removeObject,
+    setObjectShape,
+    setObjectSolid,
+    setShapeParam,
+    setOverride,
     reset,
   };
+}
+
+/** Effective sizes for an object id, for components that need the resolved value. */
+export function effectiveFor(params: HolderParams, obj: HolderObject) {
+  return effective(obj, params.globals);
 }

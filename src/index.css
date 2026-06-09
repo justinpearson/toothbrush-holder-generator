@@ -132,28 +132,75 @@ body {
   accent-color: var(--accent);
 }
 
-.tube-row {
+.controls__hint {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.object-card {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 0.5rem 0.6rem;
   margin: 0.5rem 0;
   background: #fcfbf7;
 }
-.tube-row__head {
+.object-card__head {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.tube-row__remove {
+.object-card__remove {
   border: none;
   background: transparent;
   color: var(--muted);
   cursor: pointer;
   font-size: 0.9rem;
 }
-.tube-row__remove:disabled {
+.object-card__remove:disabled {
   opacity: 0.3;
   cursor: not-allowed;
+}
+.object-card__row {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.45rem 0;
+}
+.field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.field select {
+  padding: 0.3rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--ink);
+  font-size: 0.85rem;
+}
+
+.override {
+  margin: 0.35rem 0;
+}
+.override__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+.override__toggle input {
+  accent-color: var(--accent);
+}
+.override__inherited {
+  margin-left: 1.4rem;
+  font-size: 0.76rem;
+  color: var(--muted);
 }
 
 .controls__add,

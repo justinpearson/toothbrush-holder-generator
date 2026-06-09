@@ -3,7 +3,7 @@ import type { HolderControls } from '../../state/useHolderParams';
 import { Slider } from './Slider';
 
 export function BaseControls({ controls }: { controls: HolderControls }) {
-  const { params, setBase, setWallThickness } = controls;
+  const { params, setBase } = controls;
   return (
     <section className="controls__group" aria-label="Baseplate">
       <h3>Baseplate</h3>
@@ -24,12 +24,6 @@ export function BaseControls({ controls }: { controls: HolderControls }) {
         value={params.baseHeight}
         {...LIMITS.baseHeight}
         onChange={(v) => setBase('baseHeight', v)}
-      />
-      <Slider
-        label="Wall thickness"
-        value={params.wallThickness}
-        {...LIMITS.wallThickness}
-        onChange={setWallThickness}
       />
     </section>
   );

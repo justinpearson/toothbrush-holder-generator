@@ -1,32 +1,63 @@
-import type { DerivedTube, HolderParams } from './types';
+import {
+  innerIsDegenerate,
+  innerOutlinePoints,
+  outlinePoints,
+  type OutlineParams,
+} from '../geometry/crossSection';
+import { effective } from './resolve';
+import type { DerivedObject, HolderObject, HolderParams } from './types';
 
-/** Inner bore diameter of a tube: outer minus a wall on each side. */
-export function innerDiameter(outerDiameter: number, wallThickness: number): number {
-  return outerDiameter - 2 * wallThickness;
-}
-
-/** Center-to-center spacing of evenly distributed tubes along X. */
+/** Center-to-center spacing of evenly distributed objects along X. */
 export function spacing(baseLength: number, n: number): number {
   return baseLength / n;
 }
 
-/**
- * X center of tube i, matching the reference scad `tube_x(i) = spacing*(i+0.5)`.
- * For n=4, baseLength=250 this yields 31.25, 93.75, 156.25, 218.75.
- */
-export function tubeCenterX(i: number, baseLength: number, n: number): number {
+/** X center of object i: spacing*(i+0.5) — evenly spaced, matching v1. */
+export function objectCenterX(i: number, baseLength: number, n: number): number {
   return spacing(baseLength, n) * (i + 0.5);
 }
 
-/** Enrich every tube with its derived geometry. */
-export function deriveTubes(params: HolderParams): DerivedTube[] {
-  const n = params.tubes.length;
+/** Build the OutlineParams for an object given its resolved diameter and $fn. */
+export function toOutlineParams(
+  obj: Pick<HolderObject, 'shape' | 'shapeParams'>,
+  diameter: number,
+  fn: number,
+): OutlineParams {
+  return {
+    shape: obj.shape,
+    diameter,
+    eccentricity: obj.shapeParams.eccentricity,
+    sides: obj.shapeParams.sides,
+    points: obj.shapeParams.points,
+    pointDepth: obj.shapeParams.pointDepth,
+    fn,
+  };
+}
+
+/** Resolve sizes, positions and 2D outlines for every object. */
+export function deriveObjects(params: HolderParams): DerivedObject[] {
+  const n = params.objects.length;
   const centerY = params.baseDepth / 2;
-  return params.tubes.map((tube, index) => ({
-    ...tube,
-    index,
-    innerDiameter: innerDiameter(tube.outerDiameter, params.wallThickness),
-    centerX: tubeCenterX(index, params.baseLength, n),
-    centerY,
-  }));
+  return params.objects.map((obj, index) => {
+    const sizes = effective(obj, params.globals);
+    const op = toOutlineParams(obj, sizes.diameter, params.fn);
+    const outer = outlinePoints(op);
+    const degenerate = innerIsDegenerate(op, sizes.wallThickness);
+    const inner =
+      obj.solid || degenerate ? null : innerOutlinePoints(op, sizes.wallThickness);
+    return {
+      id: obj.id,
+      index,
+      shape: obj.shape,
+      shapeParams: obj.shapeParams,
+      solid: obj.solid,
+      diameter: sizes.diameter,
+      height: sizes.height,
+      wallThickness: sizes.wallThickness,
+      centerX: objectCenterX(index, params.baseLength, n),
+      centerY,
+      outer,
+      inner,
+    };
+  });
 }

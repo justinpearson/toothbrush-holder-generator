@@ -1,10 +1,10 @@
 TODO
 ====
 
-- Regenerate README hero image (images/app-screenshot.png): it still shows the
-  old "Toothbrush Holder Maker" title and the UI before the filament color
-  picker was added.
+- Regenerate README hero image (images/app-screenshot.png): it predates the v2
+  UI (shape selector, solid/tube toggle, global defaults + per-object overrides)
+  and the filament color picker, and still shows the old "Maker" title.
 
 - Regenerate README demo (images/demo.gif and images/demo.mp4): same — recorded
-  before the rename to "Toothbrush Holder Generator" and before the filament
-  color picker existed.
+  before v2. A new demo should show picking shapes (ellipse / polygon / star),
+  toggling solid vs tube, and overriding a size on one object.

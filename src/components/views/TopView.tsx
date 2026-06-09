@@ -1,15 +1,20 @@
-import { deriveTubes } from '../../model/derive';
-import type { HolderParams } from '../../model/types';
+import { deriveObjects } from '../../model/derive';
+import type { DerivedObject, HolderParams, Vec2 } from '../../model/types';
 import { ArrowMarker, DimensionLabel } from './svg/DimensionLabel';
-import { makeSvgScale } from './svg/useSvgScale';
+import { makeSvgScale, type SvgScale } from './svg/useSvgScale';
 
 const VIEW_W = 640;
 const VIEW_H = 320;
 
-/** Top-down view: baseplate rectangle with concentric OD/ID circles per tube. */
+/** SVG polygon points for an outline placed at the object's center. */
+function polyPoints(pts: Vec2[], cx: number, cy: number, sc: SvgScale): string {
+  return pts.map(([px, py]) => `${sc.x(cx + px)},${sc.y(cy + py)}`).join(' ');
+}
+
+/** Top-down view: baseplate rectangle with each object's outline (and bore). */
 export function TopView({ params }: { params: HolderParams }) {
   const sc = makeSvgScale(params.baseLength, params.baseDepth, VIEW_W, VIEW_H);
-  const tubes = deriveTubes(params);
+  const objects = deriveObjects(params);
 
   return (
     <svg
@@ -30,21 +35,19 @@ export function TopView({ params }: { params: HolderParams }) {
         height={sc.s(params.baseDepth)}
       />
 
-      {tubes.map((t) => (
-        <g key={t.id} data-testid="top-tube">
-          <circle
+      {objects.map((o: DerivedObject) => (
+        <g key={o.id} data-testid="top-object" data-shape={o.shape}>
+          <polygon
             className="tube-outer"
-            data-testid="top-tube-outer"
-            cx={sc.x(t.centerX)}
-            cy={sc.y(t.centerY)}
-            r={sc.s(t.outerDiameter / 2)}
+            data-testid="top-object-outer"
+            data-role="outer"
+            points={polyPoints(o.outer, o.centerX, o.centerY, sc)}
           />
-          {t.innerDiameter > 0 && (
-            <circle
+          {o.inner && (
+            <polygon
               className="tube-inner"
-              cx={sc.x(t.centerX)}
-              cy={sc.y(t.centerY)}
-              r={sc.s(t.innerDiameter / 2)}
+              data-role="inner"
+              points={polyPoints(o.inner, o.centerX, o.centerY, sc)}
             />
           )}
         </g>

@@ -1,13 +1,45 @@
 // Core parameter types for the toothbrush holder.
-// All dimensions are in millimeters, matching the OpenSCAD reference model.
+// All dimensions are in millimeters.
 
-export interface TubeParams {
+import type { ShapeKind, Vec2 } from '../geometry/crossSection';
+
+export type { ShapeKind, Vec2 } from '../geometry/crossSection';
+
+/** Shape-specific parameters. Only the field relevant to the active shape is used. */
+export interface ShapeParams {
+  /** Ellipse eccentricity, 0 = circle. */
+  eccentricity: number;
+  /** Regular-polygon side count. */
+  sides: number;
+  /** Star point count. */
+  points: number;
+  /** Star inner/outer radius ratio. */
+  pointDepth: number;
+}
+
+/** A single object standing on the baseplate (a tube or a solid prism). */
+export interface HolderObject {
   /** Stable key for React lists; not part of the geometry. */
   id: string;
-  /** Outer diameter of the tube, mm. Varies between tubes. */
-  outerDiameter: number;
-  /** Height of the tube above the baseplate top, mm. Varies between tubes. */
+  shape: ShapeKind;
+  shapeParams: ShapeParams;
+  /** true = solid filled prism; false = hollow blind tube. */
+  solid: boolean;
+  /** Overall diameter, mm. null = inherit the global default. */
+  diameter: number | null;
+  /** Height above the baseplate top, mm. null = inherit global. */
+  height: number | null;
+  /** Wall thickness, mm (tubes only). null = inherit global. */
+  wallThickness: number | null;
+}
+
+/** Size keys that can be a global default or a per-object override. */
+export type SizeKey = 'diameter' | 'height' | 'wallThickness';
+
+export interface GlobalDefaults {
+  diameter: number;
   height: number;
+  wallThickness: number;
 }
 
 export interface HolderParams {
@@ -17,38 +49,45 @@ export interface HolderParams {
   baseDepth: number;
   /** Baseplate thickness along Z, mm. */
   baseHeight: number;
-  /** Wall thickness shared by every tube, mm. innerDiameter = OD - 2*wall. */
-  wallThickness: number;
-  /** Tubes, left -> right. n = tubes.length. */
-  tubes: TubeParams[];
-  /** OpenSCAD $fn: facets per circle. Also the lathe segment count. */
+  globals: GlobalDefaults;
+  /** Objects, left -> right. n = objects.length. */
+  objects: HolderObject[];
+  /** OpenSCAD $fn: facets per curve. */
   fn: number;
 }
 
-/** A tube enriched with values derived from the whole holder. Never stored. */
-export interface DerivedTube extends TubeParams {
+/** An object with all sizes resolved and its 2D outlines computed. Never stored. */
+export interface DerivedObject {
+  id: string;
   index: number;
-  /** outerDiameter - 2 * wallThickness, mm. */
-  innerDiameter: number;
-  /** Center position along X, mm. */
+  shape: ShapeKind;
+  shapeParams: ShapeParams;
+  solid: boolean;
+  /** Resolved (override ?? global) values. */
+  diameter: number;
+  height: number;
+  wallThickness: number;
   centerX: number;
-  /** Center position along Y, mm (always baseDepth/2). */
   centerY: number;
+  /** Outer outline, centered at the object's own origin. */
+  outer: Vec2[];
+  /** Inner bore outline; null when solid or the wall is too thick. */
+  inner: Vec2[] | null;
 }
 
 export type ValidationLevel = 'error' | 'warning';
 
 export type ValidationCode =
+  | 'NO_OBJECTS'
   | 'WALL_TOO_THICK'
   | 'HEIGHT_TOO_SHORT'
-  | 'TUBE_EXCEEDS_DEPTH'
-  | 'TUBES_OVERLAP'
-  | 'NO_TUBES';
+  | 'OBJECT_EXCEEDS_DEPTH'
+  | 'OBJECTS_OVERLAP';
 
 export interface ValidationIssue {
   level: ValidationLevel;
   code: ValidationCode;
   message: string;
-  /** Which tube the issue refers to, if any. */
-  tubeId?: string;
+  /** Which object the issue refers to, if any. */
+  objectId?: string;
 }

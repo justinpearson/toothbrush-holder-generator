@@ -1,7 +1,8 @@
 import { validate } from '../../model/constraints';
 import type { HolderControls } from '../../state/useHolderParams';
 import { BaseControls } from './BaseControls';
-import { TubeControls } from './TubeControls';
+import { GlobalControls } from './GlobalControls';
+import { ObjectControls } from './ObjectControls';
 
 export function ParameterControls({ controls }: { controls: HolderControls }) {
   const issues = validate(controls.params);
@@ -16,7 +17,8 @@ export function ParameterControls({ controls }: { controls: HolderControls }) {
       </div>
 
       <BaseControls controls={controls} />
-      <TubeControls controls={controls} />
+      <GlobalControls controls={controls} />
+      <ObjectControls controls={controls} />
 
       {issues.length > 0 && (
         <ul className="issues" aria-label="Validation messages">
