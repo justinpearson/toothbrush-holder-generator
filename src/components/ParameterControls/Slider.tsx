@@ -8,6 +8,9 @@ interface SliderProps {
   step: number;
   unit?: string;
   disabled?: boolean;
+  /** Hide the visible label text (the accessible names stay); for use inside
+   *  a panel whose header already names the attribute. */
+  hideLabel?: boolean;
   onChange: (value: number) => void;
 }
 
@@ -28,6 +31,7 @@ export function Slider({
   step,
   unit = 'mm',
   disabled = false,
+  hideLabel = false,
   onChange,
 }: SliderProps) {
   // Draft mirrors `value` but lets the user type freely (e.g. "1" on the way
@@ -55,8 +59,10 @@ export function Slider({
 
   return (
     <div className="slider">
-      <span className="slider__label">
-        {label}
+      <span
+        className={`slider__label${hideLabel ? ' slider__label--input-only' : ''}`}
+      >
+        {!hideLabel && label}
         <span className="slider__value">
           <input
             type="number"

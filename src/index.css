@@ -211,8 +211,32 @@ body {
   font-size: 0.85rem;
 }
 
-.override {
-  margin: 0.35rem 0 0.7rem;
+/* Bordered panel around one object attribute (size, shape param). */
+.attr {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  margin: 0.45rem 0;
+}
+.attr__head {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.55rem 0.15rem;
+}
+.attr__title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.attr__body {
+  padding: 0 0.55rem 0.45rem;
+}
+.attr__body .slider {
+  margin: 0.15rem 0 0.35rem;
+}
+.slider__label--input-only {
+  justify-content: flex-end;
 }
 .override__toggle {
   display: flex;

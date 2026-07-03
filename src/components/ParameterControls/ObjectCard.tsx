@@ -15,6 +15,24 @@ const SHAPES: { value: ShapeKind; label: string }[] = [
   { value: 'star', label: 'Star' },
 ];
 
+/** A bordered panel around one object attribute, with a small title header. */
+function AttrPanel({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="attr">
+      <div className="attr__head">
+        <span className="attr__title">{title}</span>
+      </div>
+      <div className="attr__body">{children}</div>
+    </div>
+  );
+}
+
 interface OverrideRowProps {
   label: string;
   sizeKey: SizeKey;
@@ -25,8 +43,9 @@ interface OverrideRowProps {
 }
 
 /**
- * One inheritable size. The slider is always visible: disabled at the global
- * value while inheriting, enabled once "Override global …" is checked.
+ * One inheritable size, in its own panel. The slider is always visible:
+ * disabled at the global value while inheriting, enabled once
+ * "Override global …" is checked.
  */
 function OverrideRow({
   label,
@@ -40,34 +59,40 @@ function OverrideRow({
   const limits = LIMITS[sizeKey];
   const lowerLabel = label.toLowerCase();
   return (
-    <div className="override">
-      <Slider
-        label={label}
-        value={value ?? globalValue}
-        {...limits}
-        disabled={!overridden}
-        onChange={(v) => controls.setOverride(objectId, sizeKey, v)}
-      />
-      {!overridden && (
-        <span className="override__inherited">
-          Inheriting the global value ({globalValue} mm)
-        </span>
-      )}
-      <label className="override__toggle">
-        <input
-          type="checkbox"
-          checked={overridden}
-          aria-label={`Override global ${lowerLabel}`}
-          onChange={(e) =>
-            controls.setOverride(
-              objectId,
-              sizeKey,
-              e.target.checked ? globalValue : null,
-            )
-          }
+    <div className="attr override">
+      <div className="attr__head">
+        <span className="attr__title">{label}</span>
+      </div>
+      <div className="attr__body">
+        <Slider
+          label={label}
+          value={value ?? globalValue}
+          {...limits}
+          hideLabel
+          disabled={!overridden}
+          onChange={(v) => controls.setOverride(objectId, sizeKey, v)}
         />
-        <span>Override global {lowerLabel}</span>
-      </label>
+        {!overridden && (
+          <span className="override__inherited">
+            Inheriting the global value ({globalValue} mm)
+          </span>
+        )}
+        <label className="override__toggle">
+          <input
+            type="checkbox"
+            checked={overridden}
+            aria-label={`Override global ${lowerLabel}`}
+            onChange={(e) =>
+              controls.setOverride(
+                objectId,
+                sizeKey,
+                e.target.checked ? globalValue : null,
+              )
+            }
+          />
+          <span>Override global {lowerLabel}</span>
+        </label>
+      </div>
     </div>
   );
 }
@@ -135,39 +160,51 @@ export function ObjectCard({
       </div>
 
       {object.shape === 'ellipse' && (
-        <Slider
-          label="Eccentricity"
-          value={object.shapeParams.eccentricity}
-          {...LIMITS.eccentricity}
-          unit=""
-          onChange={(v) => controls.setShapeParam(object.id, 'eccentricity', v)}
-        />
+        <AttrPanel title="Eccentricity">
+          <Slider
+            label="Eccentricity"
+            value={object.shapeParams.eccentricity}
+            {...LIMITS.eccentricity}
+            unit=""
+            hideLabel
+            onChange={(v) => controls.setShapeParam(object.id, 'eccentricity', v)}
+          />
+        </AttrPanel>
       )}
       {object.shape === 'polygon' && (
-        <Slider
-          label="Sides"
-          value={object.shapeParams.sides}
-          {...LIMITS.sides}
-          unit=""
-          onChange={(v) => controls.setShapeParam(object.id, 'sides', v)}
-        />
+        <AttrPanel title="Sides">
+          <Slider
+            label="Sides"
+            value={object.shapeParams.sides}
+            {...LIMITS.sides}
+            unit=""
+            hideLabel
+            onChange={(v) => controls.setShapeParam(object.id, 'sides', v)}
+          />
+        </AttrPanel>
       )}
       {object.shape === 'star' && (
         <>
-          <Slider
-            label="Points"
-            value={object.shapeParams.points}
-            {...LIMITS.points}
-            unit=""
-            onChange={(v) => controls.setShapeParam(object.id, 'points', v)}
-          />
-          <Slider
-            label="Point depth"
-            value={object.shapeParams.pointDepth}
-            {...LIMITS.pointDepth}
-            unit=""
-            onChange={(v) => controls.setShapeParam(object.id, 'pointDepth', v)}
-          />
+          <AttrPanel title="Points">
+            <Slider
+              label="Points"
+              value={object.shapeParams.points}
+              {...LIMITS.points}
+              unit=""
+              hideLabel
+              onChange={(v) => controls.setShapeParam(object.id, 'points', v)}
+            />
+          </AttrPanel>
+          <AttrPanel title="Point depth">
+            <Slider
+              label="Point depth"
+              value={object.shapeParams.pointDepth}
+              {...LIMITS.pointDepth}
+              unit=""
+              hideLabel
+              onChange={(v) => controls.setShapeParam(object.id, 'pointDepth', v)}
+            />
+          </AttrPanel>
         </>
       )}
 
