@@ -173,11 +173,6 @@ body {
   margin: 0.5rem 0;
   background: #fcfbf7;
 }
-.object-card__head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 .object-card__remove {
   border: none;
   background: transparent;
@@ -209,6 +204,45 @@ body {
   background: #fff;
   color: var(--ink);
   font-size: 0.85rem;
+}
+
+/* ---- collapsible panels ---- */
+.collapsible__head {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.collapsible__toggle {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  color: var(--ink);
+}
+.collapsible__chevron {
+  width: 0.8em;
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 0.75em;
+}
+.collapsible__title {
+  font-weight: 600;
+}
+.collapsible__summary {
+  margin-left: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 400;
 }
 
 /* Bordered panel around one object attribute (size, shape param). */

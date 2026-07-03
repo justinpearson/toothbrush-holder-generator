@@ -92,3 +92,28 @@ describe('ObjectCard override rows', () => {
     );
   });
 });
+
+describe('ObjectCard collapsing', () => {
+  it('collapses to a summary and expands again', () => {
+    renderCard(makeObject({ solid: true }));
+    const head = screen.getByRole('button', { name: /Object 1/ });
+    expect(head).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.queryByLabelText('Object diameter')).not.toBeNull();
+
+    fireEvent.click(head);
+    expect(head).toHaveAttribute('aria-expanded', 'false');
+    // Body is gone; the header summarizes the object.
+    expect(screen.queryByLabelText('Object diameter')).toBeNull();
+    expect(head.textContent).toContain('Circle');
+    expect(head.textContent).toContain('Solid');
+
+    fireEvent.click(head);
+    expect(screen.queryByLabelText('Object diameter')).not.toBeNull();
+  });
+
+  it('keeps the remove button outside the collapse toggle', () => {
+    const { controls } = renderCard(makeObject());
+    fireEvent.click(screen.getByLabelText('Remove object 1'));
+    expect(controls.removeObject).toHaveBeenCalledWith('obj-1');
+  });
+});
