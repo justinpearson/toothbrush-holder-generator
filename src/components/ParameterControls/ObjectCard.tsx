@@ -16,21 +16,27 @@ const SHAPES: { value: ShapeKind; label: string }[] = [
   { value: 'star', label: 'Star' },
 ];
 
-/** A bordered panel around one object attribute, with a small title header. */
+/** A bordered collapsible panel around one object attribute. */
 function AttrPanel({
   title,
+  summary,
+  className,
   children,
 }: {
   title: string;
+  /** Current value, shown in the header while collapsed. */
+  summary: string;
+  className?: string;
   children: React.ReactNode;
 }) {
   return (
-    <div className="attr">
-      <div className="attr__head">
-        <span className="attr__title">{title}</span>
-      </div>
-      <div className="attr__body">{children}</div>
-    </div>
+    <Collapsible
+      title={title}
+      summary={summary}
+      className={`attr${className ? ` ${className}` : ''}`}
+    >
+      {children}
+    </Collapsible>
   );
 }
 
@@ -60,41 +66,40 @@ function OverrideRow({
   const limits = LIMITS[sizeKey];
   const lowerLabel = label.toLowerCase();
   return (
-    <div className="attr override">
-      <div className="attr__head">
-        <span className="attr__title">{label}</span>
-      </div>
-      <div className="attr__body">
-        <Slider
-          label={label}
-          value={value ?? globalValue}
-          {...limits}
-          hideLabel
-          disabled={!overridden}
-          onChange={(v) => controls.setOverride(objectId, sizeKey, v)}
+    <AttrPanel
+      title={label}
+      summary={`${value ?? globalValue} mm${overridden ? '' : ' (global)'}`}
+      className="override"
+    >
+      <Slider
+        label={label}
+        value={value ?? globalValue}
+        {...limits}
+        hideLabel
+        disabled={!overridden}
+        onChange={(v) => controls.setOverride(objectId, sizeKey, v)}
+      />
+      {!overridden && (
+        <span className="override__inherited">
+          Inheriting the global value ({globalValue} mm)
+        </span>
+      )}
+      <label className="override__toggle">
+        <input
+          type="checkbox"
+          checked={overridden}
+          aria-label={`Override global ${lowerLabel}`}
+          onChange={(e) =>
+            controls.setOverride(
+              objectId,
+              sizeKey,
+              e.target.checked ? globalValue : null,
+            )
+          }
         />
-        {!overridden && (
-          <span className="override__inherited">
-            Inheriting the global value ({globalValue} mm)
-          </span>
-        )}
-        <label className="override__toggle">
-          <input
-            type="checkbox"
-            checked={overridden}
-            aria-label={`Override global ${lowerLabel}`}
-            onChange={(e) =>
-              controls.setOverride(
-                objectId,
-                sizeKey,
-                e.target.checked ? globalValue : null,
-              )
-            }
-          />
-          <span>Override global {lowerLabel}</span>
-        </label>
-      </div>
-    </div>
+        <span>Override global {lowerLabel}</span>
+      </label>
+    </AttrPanel>
   );
 }
 
@@ -166,7 +171,10 @@ export function ObjectCard({
         </div>
 
         {object.shape === 'ellipse' && (
-          <AttrPanel title="Eccentricity">
+          <AttrPanel
+            title="Eccentricity"
+            summary={`${object.shapeParams.eccentricity}`}
+          >
             <Slider
               label="Eccentricity"
               value={object.shapeParams.eccentricity}
@@ -178,7 +186,7 @@ export function ObjectCard({
           </AttrPanel>
         )}
         {object.shape === 'polygon' && (
-          <AttrPanel title="Sides">
+          <AttrPanel title="Sides" summary={`${object.shapeParams.sides}`}>
             <Slider
               label="Sides"
               value={object.shapeParams.sides}
@@ -191,7 +199,7 @@ export function ObjectCard({
         )}
         {object.shape === 'star' && (
           <>
-            <AttrPanel title="Points">
+            <AttrPanel title="Points" summary={`${object.shapeParams.points}`}>
               <Slider
                 label="Points"
                 value={object.shapeParams.points}
@@ -201,7 +209,10 @@ export function ObjectCard({
                 onChange={(v) => controls.setShapeParam(object.id, 'points', v)}
               />
             </AttrPanel>
-            <AttrPanel title="Point depth">
+            <AttrPanel
+              title="Point depth"
+              summary={`${object.shapeParams.pointDepth}`}
+            >
               <Slider
                 label="Point depth"
                 value={object.shapeParams.pointDepth}

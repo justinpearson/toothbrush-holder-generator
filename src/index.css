@@ -114,11 +114,13 @@ body {
   margin: 0;
   font-size: 1.1rem;
 }
+.controls__header-actions {
+  display: flex;
+  gap: 0.4rem;
+}
 
 .controls__group {
   margin-top: 1rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--border);
 }
 .controls__group h3 {
   margin: 0 0 0.5rem;
@@ -245,32 +247,32 @@ body {
   font-weight: 400;
 }
 
-/* Bordered panel around one object attribute (size, shape param). */
+/* Bordered collapsible panel around one object attribute. */
 .attr {
   border: 1px solid var(--border);
   border-radius: 8px;
   background: #fff;
   margin: 0.45rem 0;
 }
-.attr__head {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.35rem 0.55rem 0.15rem;
+.attr > .collapsible__head {
+  padding: 0.3rem 0.55rem 0.15rem;
 }
-.attr__title {
+.attr .collapsible__title {
   font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--ink);
 }
-.attr__body {
+.attr > .collapsible__body {
   padding: 0 0.55rem 0.45rem;
 }
-.attr__body .slider {
+.attr > .collapsible__body .slider {
   margin: 0.15rem 0 0.35rem;
 }
 .slider__label--input-only {
   justify-content: flex-end;
+}
+
+/* Collapsible top-level sections (Baseplate, Global defaults). */
+.collapsible--section > .collapsible__head .collapsible__title {
+  font-size: 0.95rem;
 }
 .override__toggle {
   display: flex;
