@@ -13,6 +13,7 @@ function obj(overrides: Partial<HolderObject>): HolderObject {
     height: 50,
     wallThickness: 4,
     padding: 4,
+    positionX: null,
     ...overrides,
   };
 }

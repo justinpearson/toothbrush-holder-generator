@@ -1,5 +1,5 @@
 import { bbox } from '../geometry/crossSection';
-import { deriveObjects, spacing } from './derive';
+import { deriveObjects } from './derive';
 import type { HolderParams, ValidationIssue } from './types';
 
 // Slider bounds. Loose enough to be useful, tight enough to stay printable.
@@ -76,17 +76,19 @@ export function validate(params: HolderParams): ValidationIssue[] {
     }
   }
 
-  // Adjacent objects overlap when their bounding radii sum exceeds the spacing.
-  const s = spacing(params.baseLength, n);
-  for (let i = 0; i < objects.length - 1; i++) {
-    const a = objects[i];
-    const b = objects[i + 1];
-    if (a.outerDiameter / 2 + b.outerDiameter / 2 > s) {
+  // Neighbors (by actual X position — objects may be custom-placed) overlap
+  // when their bounding radii sum exceeds the distance between their centers.
+  const byX = [...objects].sort((a, b) => a.centerX - b.centerX);
+  for (let i = 0; i < byX.length - 1; i++) {
+    const a = byX[i];
+    const b = byX[i + 1];
+    const gap = b.centerX - a.centerX;
+    if (a.outerDiameter / 2 + b.outerDiameter / 2 > gap) {
       issues.push({
         level: 'warning',
         code: 'OBJECTS_OVERLAP',
         objectId: b.id,
-        message: `Objects ${a.index + 1} and ${b.index + 1} overlap at the current spacing (${s.toFixed(1)} mm). Widen the baseplate or use fewer/smaller objects.`,
+        message: `Objects ${a.index + 1} and ${b.index + 1} overlap (centers ${gap.toFixed(1)} mm apart). Move them apart, widen the baseplate, or use fewer/smaller objects.`,
       });
     }
   }

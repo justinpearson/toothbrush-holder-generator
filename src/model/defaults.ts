@@ -27,6 +27,7 @@ function makeObject(overrides: Partial<HolderObject> = {}): HolderObject {
     height: null,
     wallThickness: null,
     padding: null,
+    positionX: null,
     ...overrides,
   };
 }

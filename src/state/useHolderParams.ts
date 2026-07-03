@@ -22,6 +22,8 @@ export interface HolderControls {
   setShapeParam: (id: string, key: keyof ShapeParams, value: number) => void;
   /** value = a number to override, or null to inherit the global default. */
   setOverride: (id: string, key: SizeKey, value: number | null) => void;
+  /** value = a custom X center in mm, or null for automatic even spacing. */
+  setPositionX: (id: string, value: number | null) => void;
   reset: () => void;
 }
 
@@ -109,6 +111,12 @@ export function useHolderParams(
     [patchObject],
   );
 
+  const setPositionX = useCallback(
+    (id: string, value: number | null) =>
+      patchObject(id, (o) => ({ ...o, positionX: value })),
+    [patchObject],
+  );
+
   const reset = useCallback(() => setParams(initial), [initial]);
 
   return {
@@ -122,6 +130,7 @@ export function useHolderParams(
     setObjectSolid,
     setShapeParam,
     setOverride,
+    setPositionX,
     reset,
   };
 }

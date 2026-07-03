@@ -14,6 +14,7 @@ function singleObject(overrides: Partial<HolderObject>): HolderParams {
     height: 50,
     wallThickness: 4,
     padding: 4,
+    positionX: null,
     ...overrides,
   };
   return { ...DEFAULT_PARAMS, objects: [obj] };

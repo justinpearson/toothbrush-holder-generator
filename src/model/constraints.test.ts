@@ -13,6 +13,7 @@ function obj(overrides: Partial<HolderObject>): HolderObject {
     height: null,
     wallThickness: null,
     padding: null,
+    positionX: null,
     ...overrides,
   };
 }
@@ -76,6 +77,21 @@ describe('validate', () => {
       params({
         baseLength: 80,
         objects: [obj({ objectDiameter: 36 }), obj({ objectDiameter: 36 })],
+      }),
+    );
+    expect(issues.some((i) => i.code === 'OBJECTS_OVERLAP')).toBe(true);
+  });
+
+  it('warns OBJECTS_OVERLAP for custom positions, sorted by actual X', () => {
+    // Objects 1 and 3 are custom-placed 10 mm apart at the far right; the
+    // check must compare by position, not by list order.
+    const issues = validate(
+      params({
+        objects: [
+          obj({ id: 'a', positionX: 230 }),
+          obj({ id: 'b' }),
+          obj({ id: 'c', positionX: 240 }),
+        ],
       }),
     );
     expect(issues.some((i) => i.code === 'OBJECTS_OVERLAP')).toBe(true);

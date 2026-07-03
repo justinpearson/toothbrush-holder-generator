@@ -1,4 +1,5 @@
 import { LIMITS } from '../../model/constraints';
+import { objectCenterX } from '../../model/derive';
 import type {
   GlobalDefaults,
   HolderObject,
@@ -8,6 +9,11 @@ import type {
 import type { HolderControls } from '../../state/useHolderParams';
 import { Collapsible } from './Collapsible';
 import { Slider } from './Slider';
+
+/** Trim a length to at most 2 decimals for display. */
+function fmt(v: number): string {
+  return `${Number(v.toFixed(2))}`;
+}
 
 const SHAPES: { value: ShapeKind; label: string }[] = [
   { value: 'circle', label: 'Circle' },
@@ -103,6 +109,60 @@ function OverrideRow({
           }
         />
         <span>Override global {lowerLabel}</span>
+      </label>
+    </AttrPanel>
+  );
+}
+
+/**
+ * The object's X center: evenly spaced by default, or a custom position once
+ * "Override even spacing" is checked.
+ */
+function PositionRow({
+  object,
+  index,
+  controls,
+}: {
+  object: HolderObject;
+  index: number;
+  controls: HolderControls;
+}) {
+  const { baseLength, objects } = controls.params;
+  const autoCenter = objectCenterX(index, baseLength, objects.length);
+  const positioned = object.positionX !== null;
+  const value = object.positionX ?? autoCenter;
+  return (
+    <AttrPanel
+      title="Position"
+      stateKey={`${object.id}:positionX`}
+      summary={`${fmt(value)} mm${positioned ? '' : ' (auto)'}`}
+      className="override"
+    >
+      <Slider
+        label="Position"
+        value={value}
+        min={0}
+        max={baseLength}
+        step={1}
+        hideLabel
+        disabled={!positioned}
+        onChange={(v) => controls.setPositionX(object.id, v)}
+      />
+      {!positioned && (
+        <span className="override__inherited">
+          Evenly spaced (center at {fmt(autoCenter)} mm)
+        </span>
+      )}
+      <label className="override__toggle">
+        <input
+          type="checkbox"
+          checked={positioned}
+          aria-label="Override even spacing"
+          onChange={(e) =>
+            controls.setPositionX(object.id, e.target.checked ? autoCenter : null)
+          }
+        />
+        <span>Override even spacing</span>
       </label>
     </AttrPanel>
   );
@@ -277,6 +337,7 @@ export function ObjectCard({
             />
           </>
         )}
+        <PositionRow object={object} index={index} controls={controls} />
       </Collapsible>
     </div>
   );

@@ -17,6 +17,7 @@ function fakeControls(): HolderControls {
     setObjectSolid: vi.fn(),
     setShapeParam: vi.fn(),
     setOverride: vi.fn(),
+    setPositionX: vi.fn(),
     reset: vi.fn(),
   };
 }
@@ -31,6 +32,7 @@ function makeObject(overrides: Partial<HolderObject> = {}): HolderObject {
     height: null,
     wallThickness: null,
     padding: null,
+    positionX: null,
     ...overrides,
   };
 }
@@ -90,6 +92,30 @@ describe('ObjectCard override rows', () => {
       'objectDiameter',
       null,
     );
+  });
+});
+
+describe('ObjectCard position row', () => {
+  it('shows the even-spacing center as a disabled slider until overridden', () => {
+    const { container, controls } = renderCard(makeObject());
+    const position = screen.getByLabelText<HTMLInputElement>('Position');
+    // Rendered as object 1 of the 4 default objects: center = 250/4 * 0.5.
+    expect(position).toBeDisabled();
+    expect(position).toHaveValue(31.25);
+    expect(container.textContent).toContain('Evenly spaced');
+
+    fireEvent.click(screen.getByLabelText('Override even spacing'));
+    expect(controls.setPositionX).toHaveBeenCalledWith('obj-1', 31.25);
+  });
+
+  it('shows a custom position as an enabled slider and can revert', () => {
+    const { controls } = renderCard(makeObject({ positionX: 200 }));
+    const position = screen.getByLabelText<HTMLInputElement>('Position');
+    expect(position).toBeEnabled();
+    expect(position).toHaveValue(200);
+
+    fireEvent.click(screen.getByLabelText('Override even spacing'));
+    expect(controls.setPositionX).toHaveBeenCalledWith('obj-1', null);
   });
 });
 

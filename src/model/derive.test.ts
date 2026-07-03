@@ -13,6 +13,7 @@ function obj(overrides: Partial<HolderObject>): HolderObject {
     height: null,
     wallThickness: null,
     padding: null,
+    positionX: null,
     ...overrides,
   };
 }
@@ -56,6 +57,16 @@ describe('deriveObjects', () => {
       objects: [obj({ solid: true, objectDiameter: 15 })],
     };
     expect(deriveObjects(params)[0].outerDiameter).toBe(15);
+  });
+
+  it('a positionX override moves the object; null keeps even spacing', () => {
+    const params: HolderParams = {
+      ...DEFAULT_PARAMS,
+      objects: [obj({ id: 'a' }), obj({ id: 'b', positionX: 200 })],
+    };
+    const d = deriveObjects(params);
+    expect(d[0].centerX).toBe(objectCenterX(0, params.baseLength, 2));
+    expect(d[1].centerX).toBe(200);
   });
 
   it('computes outer and inner outlines for a circle tube', () => {

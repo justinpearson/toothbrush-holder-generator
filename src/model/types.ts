@@ -39,6 +39,8 @@ export interface HolderObject {
   /** Clearance around the held item so it slides in easily, mm (tubes only).
    *  null = inherit global. */
   padding: number | null;
+  /** Custom X center on the baseplate, mm. null = evenly spaced. */
+  positionX: number | null;
 }
 
 /** Size keys that can be a global default or a per-object override. */

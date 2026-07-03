@@ -57,7 +57,7 @@ export function deriveObjects(params: HolderParams): DerivedObject[] {
       wallThickness: sizes.wallThickness,
       padding: sizes.padding,
       outerDiameter,
-      centerX: objectCenterX(index, params.baseLength, n),
+      centerX: obj.positionX ?? objectCenterX(index, params.baseLength, n),
       centerY,
       outer,
       inner,

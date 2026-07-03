@@ -34,6 +34,7 @@ function obj(overrides: Partial<HolderObject>): HolderObject {
     height: null,
     wallThickness: null,
     padding: null,
+    positionX: null,
     ...overrides,
   };
 }
