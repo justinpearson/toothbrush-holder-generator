@@ -79,12 +79,16 @@ export function SideView({ params }: { params: HolderParams }) {
                 />
               </>
             )}
+            {/* Dimension the outer diameter the user set, centered on the
+                object — a star/polygon silhouette (bbox) is narrower than its
+                vertex-to-vertex diameter, so measuring the bbox would show
+                e.g. 14 for a 15 mm star. */}
             <DimensionLabel
-              x1={sc.x(left)}
+              x1={sc.x(o.centerX - o.outerDiameter / 2)}
               y1={topY - 14}
-              x2={sc.x(left + width)}
+              x2={sc.x(o.centerX + o.outerDiameter / 2)}
               y2={topY - 14}
-              label={`${Math.round(width)}`}
+              label={`${o.outerDiameter}`}
               textOffset={{ dy: -7 }}
             />
           </g>
