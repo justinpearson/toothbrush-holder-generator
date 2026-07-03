@@ -63,3 +63,20 @@ describe('SideView held object (dummy toothbrush)', () => {
     expect(container.querySelector('[data-testid="side-held"]')).toBeNull();
   });
 });
+
+describe('SideView height dimensions', () => {
+  it('draws a vertical height dimension beside each object', () => {
+    const params: HolderParams = {
+      ...DEFAULT_PARAMS,
+      objects: [
+        { ...singleObject({ height: 50 }).objects[0], id: 'a' },
+        { ...singleObject({ height: 120 }).objects[0], id: 'b' },
+      ],
+    };
+    const { container } = render(<SideView params={params} />);
+    const labels = [
+      ...container.querySelectorAll('[data-testid="side-height-dim"] text'),
+    ].map((t) => t.textContent);
+    expect(labels).toEqual(['50', '120']);
+  });
+});

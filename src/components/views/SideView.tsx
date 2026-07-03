@@ -122,6 +122,17 @@ export function SideView({ params }: { params: HolderParams }) {
               label={`${dimWidth}`}
               textOffset={{ dy: -7 }}
             />
+            {/* Height, dimensioned just right of the silhouette. */}
+            <g data-testid="side-height-dim">
+              <DimensionLabel
+                x1={sc.x(left + width) + 12}
+                y1={topY}
+                x2={sc.x(left + width) + 12}
+                y2={sc.y(baseTop)}
+                label={`${o.height}`}
+                textOffset={{ dx: 12 }}
+              />
+            </g>
           </g>
         );
       })}
