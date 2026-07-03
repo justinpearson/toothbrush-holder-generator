@@ -478,6 +478,12 @@ body {
   stroke-width: 1.5;
   stroke-dasharray: 4 3;
 }
+/* Dummy held object (toothbrush) standing in a tube's bore. */
+.view-svg .held {
+  fill: #e4e4e4;
+  stroke: #a8a8a8;
+  stroke-width: 1;
+}
 .view-svg .dim {
   color: var(--accent);
   stroke: var(--accent);

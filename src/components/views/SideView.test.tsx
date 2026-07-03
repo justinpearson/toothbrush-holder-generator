@@ -35,9 +35,31 @@ describe('SideView dimension labels', () => {
     expect(label).toBe('15');
   });
 
-  it('labels a circle tube with its printed outer diameter', () => {
-    // 36 object + 4 padding + 2*4 wall = 48.
-    const label = objectDimensionLabel(singleObject({ objectDiameter: 36 }));
-    expect(label).toBe('48');
+  it('labels a tube with the held object diameter, not the printed outer size', () => {
+    const label = objectDimensionLabel(singleObject({ objectDiameter: 26 }));
+    expect(label).toBe('26');
+  });
+});
+
+describe('SideView held object (dummy toothbrush)', () => {
+  it('draws a held-object silhouette inside a tube, sticking out the top', () => {
+    const params = singleObject({ objectDiameter: 26 });
+    const { container } = render(<SideView params={params} />);
+    const held = container.querySelector('[data-testid="side-held"]')!;
+    expect(held).not.toBeNull();
+    const tube = container.querySelector('[data-testid="side-object-rect"]')!;
+    // The held object is narrower than the tube and taller (sticks out).
+    expect(Number(held.getAttribute('width'))).toBeLessThan(
+      Number(tube.getAttribute('width')),
+    );
+    expect(Number(held.getAttribute('y'))).toBeLessThan(
+      Number(tube.getAttribute('y')),
+    );
+  });
+
+  it('draws no held object for a solid', () => {
+    const params = singleObject({ solid: true });
+    const { container } = render(<SideView params={params} />);
+    expect(container.querySelector('[data-testid="side-held"]')).toBeNull();
   });
 });

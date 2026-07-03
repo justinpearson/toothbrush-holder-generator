@@ -1,17 +1,25 @@
 import { bbox } from '../../geometry/crossSection';
 import { deriveObjects } from '../../model/derive';
-import type { HolderParams } from '../../model/types';
+import type { DerivedObject, HolderParams } from '../../model/types';
 import { ArrowMarker, DimensionLabel } from './svg/DimensionLabel';
 import { makeSvgScale } from './svg/useSvgScale';
 
 const VIEW_W = 640;
 const VIEW_H = 320;
 
+/** How far the dummy held object (toothbrush) pokes out of its tube, mm. */
+function stickout(o: DerivedObject): number {
+  return Math.max(8, o.height * 0.4);
+}
+
 /** Side elevation (X-Z): baseplate with each object's silhouette + bore lines. */
 export function SideView({ params }: { params: HolderParams }) {
   const objects = deriveObjects(params);
-  const maxHeight = objects.reduce((m, o) => Math.max(m, o.height), 0);
-  const worldH = params.baseHeight + maxHeight;
+  const worldTop = objects.reduce(
+    (m, o) => Math.max(m, o.height + (o.inner ? stickout(o) : 0)),
+    0,
+  );
+  const worldH = params.baseHeight + worldTop;
   const sc = makeSvgScale(params.baseLength, worldH, VIEW_W, VIEW_H);
   const baseTop = params.baseHeight;
 
@@ -44,8 +52,35 @@ export function SideView({ params }: { params: HolderParams }) {
         const floorY = sc.y(baseTop + o.wallThickness);
         const bore = o.inner ? bbox(o.inner) : null;
 
+        // Dummy held object (e.g. a toothbrush): a light silhouette of the
+        // measured item, standing on the bore floor and poking out the top.
+        const held = o.inner
+          ? {
+              width: o.objectDiameter,
+              bottom: baseTop + o.wallThickness,
+              top: baseTop + o.height + stickout(o),
+            }
+          : null;
+
+        // Dimension the size the user set: the held object's diameter for a
+        // tube, the outer diameter for a solid. (A star/polygon silhouette
+        // is narrower than its vertex-to-vertex diameter, so never measure
+        // the bbox — a 15 mm star would read 14.)
+        const dimWidth = held ? held.width : o.outerDiameter;
+        const dimY = held ? sc.y(held.top) - 14 : topY - 14;
+
         return (
           <g key={o.id} data-testid="side-object" data-shape={o.shape}>
+            {held && (
+              <rect
+                className="held"
+                data-testid="side-held"
+                x={sc.x(o.centerX - held.width / 2)}
+                y={sc.y(held.top)}
+                width={sc.s(held.width)}
+                height={sc.s(held.top - held.bottom)}
+              />
+            )}
             <rect
               className="tube-outer"
               data-testid="side-object-rect"
@@ -79,16 +114,12 @@ export function SideView({ params }: { params: HolderParams }) {
                 />
               </>
             )}
-            {/* Dimension the outer diameter the user set, centered on the
-                object — a star/polygon silhouette (bbox) is narrower than its
-                vertex-to-vertex diameter, so measuring the bbox would show
-                e.g. 14 for a 15 mm star. */}
             <DimensionLabel
-              x1={sc.x(o.centerX - o.outerDiameter / 2)}
-              y1={topY - 14}
-              x2={sc.x(o.centerX + o.outerDiameter / 2)}
-              y2={topY - 14}
-              label={`${o.outerDiameter}`}
+              x1={sc.x(o.centerX - dimWidth / 2)}
+              y1={dimY}
+              x2={sc.x(o.centerX + dimWidth / 2)}
+              y2={dimY}
+              label={`${dimWidth}`}
               textOffset={{ dy: -7 }}
             />
           </g>
