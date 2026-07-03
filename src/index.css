@@ -140,6 +140,21 @@ body {
   color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
+.slider__number {
+  width: 4.2em;
+  padding: 0.1rem 0.25rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.slider__number:disabled {
+  background: transparent;
+  color: var(--muted);
+}
 .slider input[type="range"] {
   width: 100%;
   accent-color: var(--accent);
