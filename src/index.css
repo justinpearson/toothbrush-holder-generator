@@ -177,6 +177,17 @@ body {
   margin: 0.5rem 0;
   background: #fcfbf7;
 }
+/* Pill on a collapsed card whose object has custom (non-global) values. */
+.object-card__custom {
+  margin-left: 0.4rem;
+  padding: 0.05rem 0.4rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
 .object-card__remove {
   border: none;
   background: transparent;

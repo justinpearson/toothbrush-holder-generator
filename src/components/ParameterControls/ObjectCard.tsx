@@ -185,12 +185,28 @@ export function ObjectCard({
 }: ObjectCardProps) {
   const shapeLabel =
     SHAPES.find((s) => s.value === object.shape)?.label ?? object.shape;
+  // Any override that actually applies (padding/wall are unused on solids).
+  const customized = [
+    object.objectDiameter,
+    object.height,
+    object.positionX,
+    ...(object.solid ? [] : [object.padding, object.wallThickness]),
+  ].some((v) => v !== null);
   return (
     <div className="object-card" data-testid="object-card">
       <Collapsible
         title={`Object ${index + 1}`}
         stateKey={`object:${object.id}`}
-        summary={`${shapeLabel} · ${object.solid ? 'Solid' : 'Tube'}`}
+        summary={
+          <>
+            {shapeLabel} · {object.solid ? 'Solid' : 'Tube'}
+            {customized && (
+              <span className="object-card__custom" title="Has custom overrides">
+                custom
+              </span>
+            )}
+          </>
+        }
         className="collapsible--card"
         actions={
           <button

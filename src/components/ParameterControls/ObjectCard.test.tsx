@@ -142,4 +142,25 @@ describe('ObjectCard collapsing', () => {
     fireEvent.click(screen.getByLabelText('Remove object 1'));
     expect(controls.removeObject).toHaveBeenCalledWith('obj-1');
   });
+
+  it('marks a collapsed object that has custom overrides', () => {
+    renderCard(makeObject({ objectDiameter: 15 }));
+    const head = screen.getByRole('button', { name: /Object 1/ });
+    fireEvent.click(head);
+    expect(head.textContent).toContain('custom');
+  });
+
+  it('shows no custom mark when every value is inherited', () => {
+    renderCard(makeObject());
+    const head = screen.getByRole('button', { name: /Object 1/ });
+    fireEvent.click(head);
+    expect(head.textContent).not.toContain('custom');
+  });
+
+  it('ignores overrides that do not apply (padding on a solid)', () => {
+    renderCard(makeObject({ solid: true, padding: 8 }));
+    const head = screen.getByRole('button', { name: /Object 1/ });
+    fireEvent.click(head);
+    expect(head.textContent).not.toContain('custom');
+  });
 });
