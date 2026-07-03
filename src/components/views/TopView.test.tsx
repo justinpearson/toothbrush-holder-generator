@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_PARAMS } from '../../model/defaults';
+import type { HolderParams } from '../../model/types';
 import { TopView } from './TopView';
 
 function labels(container: HTMLElement, testid: string): string[] {
@@ -25,6 +26,25 @@ describe('TopView dimensions', () => {
       '62.5',
       '62.5',
       '31.25',
+    ]);
+  });
+
+  it('sorts the spacing chain by actual X when objects are custom-placed', () => {
+    // Object 4 moved between objects 2 and 3: centers become
+    // 31.25, 93.75, 100 (custom), 156.25.
+    const params: HolderParams = {
+      ...DEFAULT_PARAMS,
+      objects: DEFAULT_PARAMS.objects.map((o, i) =>
+        i === 3 ? { ...o, positionX: 100 } : o,
+      ),
+    };
+    const { container } = render(<TopView params={params} />);
+    expect(labels(container, 'top-spacing-dim')).toEqual([
+      '31.25',
+      '62.5',
+      '6.25',
+      '56.25',
+      '93.75',
     ]);
   });
 });

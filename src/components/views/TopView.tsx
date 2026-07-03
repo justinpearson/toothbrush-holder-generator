@@ -20,7 +20,8 @@ function fmt(v: number): string {
 export function TopView({ params }: { params: HolderParams }) {
   const sc = makeSvgScale(params.baseLength, params.baseDepth, VIEW_W, VIEW_H);
   const objects = deriveObjects(params);
-  const centers = objects.map((o) => o.centerX);
+  // Sorted by actual X — custom-placed objects may not be in index order.
+  const centers = objects.map((o) => o.centerX).sort((a, b) => a - b);
   // Spacing chain along the plate's top edge: left edge -> center 1 ->
   // center 2 -> ... -> right edge, so even spacing is easy to verify.
   const spacingY = sc.y(params.baseDepth) + 16;
