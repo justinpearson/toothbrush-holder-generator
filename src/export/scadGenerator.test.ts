@@ -9,9 +9,10 @@ function obj(overrides: Partial<HolderObject>): HolderObject {
     shape: 'circle',
     shapeParams: { ...DEFAULT_SHAPE_PARAMS },
     solid: false,
-    diameter: 48,
+    objectDiameter: 36,
     height: 50,
     wallThickness: 4,
+    padding: 4,
     ...overrides,
   };
 }
@@ -57,7 +58,8 @@ describe('generateScad', () => {
   });
 
   it('uses the same outline points as the geometry (parity)', () => {
-    // A circle of diameter 48: first outer vertex is [24, 0] at +X.
+    // Tube outer = 36 object + 4 padding + 2*4 wall = 48, so the first
+    // outer vertex is [24, 0] at +X.
     const out = generateScad({ ...DEFAULT_PARAMS, objects: [obj({})] });
     expect(out).toContain('[24, 0]');
   });

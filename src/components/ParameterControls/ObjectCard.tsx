@@ -172,10 +172,10 @@ export function ObjectCard({
       )}
 
       <OverrideRow
-        label="Diameter"
-        sizeKey="diameter"
-        value={object.diameter}
-        globalValue={globals.diameter}
+        label="Object diameter"
+        sizeKey="objectDiameter"
+        value={object.objectDiameter}
+        globalValue={globals.objectDiameter}
         controls={controls}
         objectId={object.id}
       />
@@ -188,14 +188,24 @@ export function ObjectCard({
         objectId={object.id}
       />
       {!object.solid && (
-        <OverrideRow
-          label="Wall thickness"
-          sizeKey="wallThickness"
-          value={object.wallThickness}
-          globalValue={globals.wallThickness}
-          controls={controls}
-          objectId={object.id}
-        />
+        <>
+          <OverrideRow
+            label="Padding"
+            sizeKey="padding"
+            value={object.padding}
+            globalValue={globals.padding}
+            controls={controls}
+            objectId={object.id}
+          />
+          <OverrideRow
+            label="Wall thickness"
+            sizeKey="wallThickness"
+            value={object.wallThickness}
+            globalValue={globals.wallThickness}
+            controls={controls}
+            objectId={object.id}
+          />
+        </>
       )}
     </div>
   );

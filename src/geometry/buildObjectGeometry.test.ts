@@ -10,9 +10,10 @@ function singleObject(overrides: Partial<HolderObject>): HolderParams {
     shape: 'circle',
     shapeParams: { ...DEFAULT_SHAPE_PARAMS },
     solid: false,
-    diameter: 48,
+    objectDiameter: 48,
     height: 50,
     wallThickness: 4,
+    padding: 4,
     ...overrides,
   };
   return { ...DEFAULT_PARAMS, objects: [obj] };
@@ -38,17 +39,26 @@ describe('buildObjectGeometry', () => {
     expect(box.max.y).toBeCloseTo(24, 5);
   });
 
-  it('a tube spans the same envelope and has more triangles than a solid', () => {
+  it('a tube spans the same height envelope and has more triangles than a solid', () => {
     const solid = bounds({ solid: true });
     const tube = bounds({ solid: false });
     expect(tube.box.max.z).toBeCloseTo(50, 5);
     expect(tube.box.min.z).toBeCloseTo(-SINK_EPSILON, 5);
+    // A tube wraps the held object: outer = 48 + 4 padding + 2*4 wall = 60.
+    expect(tube.box.max.x).toBeCloseTo(30, 5);
     // The holed ring adds the inner wall, so a tube has more vertices.
     expect(tube.count).toBeGreaterThan(solid.count);
   });
 
   it('a degenerate (too-thick wall) tube falls back to a solid extrusion', () => {
-    const { count, box } = bounds({ solid: false, wallThickness: 30 });
+    // A star bore (R*pointDepth - wall) can still vanish; circles no longer can.
+    const { count, box } = bounds({
+      shape: 'star',
+      solid: false,
+      objectDiameter: 5,
+      padding: 0,
+      wallThickness: 4,
+    });
     expect(count).toBeGreaterThan(0);
     expect(box.max.z).toBeCloseTo(50, 5);
   });

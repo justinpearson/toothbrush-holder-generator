@@ -30,16 +30,17 @@ function obj(overrides: Partial<HolderObject>): HolderObject {
     shape: 'circle',
     shapeParams: { ...DEFAULT_SHAPE_PARAMS },
     solid: false,
-    diameter: null,
+    objectDiameter: null,
     height: null,
     wallThickness: null,
+    padding: null,
     ...overrides,
   };
 }
 
 const params: HolderParams = {
   ...DEFAULT_PARAMS,
-  globals: { diameter: 48, height: 30, wallThickness: 4 },
+  globals: { objectDiameter: 36, height: 30, wallThickness: 4, padding: 4 },
   objects: [
     obj({ id: 'circle-tube', shape: 'circle', solid: false }),
     obj({ id: 'square-solid', shape: 'polygon', solid: true, shapeParams: { ...DEFAULT_SHAPE_PARAMS, sides: 4 } }),

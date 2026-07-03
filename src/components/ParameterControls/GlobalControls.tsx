@@ -9,11 +9,22 @@ export function GlobalControls({ controls }: { controls: HolderControls }) {
     <section className="controls__group" aria-label="Global defaults">
       <h3>Global defaults</h3>
       <p className="controls__hint">Objects use these unless they override below.</p>
+      <p className="controls__hint">
+        Object diameter is the item the holder holds (e.g. a 26 mm toothbrush).
+        A tube&apos;s bore is object diameter + padding; its printed outer size
+        adds a wall on each side.
+      </p>
       <Slider
-        label="Diameter"
-        value={params.globals.diameter}
-        {...LIMITS.diameter}
-        onChange={(v) => setGlobal('diameter', v)}
+        label="Object diameter"
+        value={params.globals.objectDiameter}
+        {...LIMITS.objectDiameter}
+        onChange={(v) => setGlobal('objectDiameter', v)}
+      />
+      <Slider
+        label="Padding"
+        value={params.globals.padding}
+        {...LIMITS.padding}
+        onChange={(v) => setGlobal('padding', v)}
       />
       <Slider
         label="Height"

@@ -9,9 +9,10 @@ function obj(overrides: Partial<HolderObject>): HolderObject {
     shape: 'circle',
     shapeParams: { ...DEFAULT_SHAPE_PARAMS },
     solid: false,
-    diameter: null,
+    objectDiameter: null,
     height: null,
     wallThickness: null,
+    padding: null,
     ...overrides,
   };
 }
@@ -26,15 +27,31 @@ describe('validate', () => {
   });
 
   it('flags WALL_TOO_THICK when the bore vanishes', () => {
+    // The wall wraps around the held object, so a circle bore can never
+    // vanish — but a star's inner radius (R*pointDepth - wall) still can.
     const issues = validate(
-      params({ objects: [obj({ diameter: 48, wallThickness: 24 })] }),
+      params({
+        objects: [
+          obj({ shape: 'star', objectDiameter: 5, padding: 0, wallThickness: 4 }),
+        ],
+      }),
     );
     expect(issues.some((i) => i.code === 'WALL_TOO_THICK')).toBe(true);
   });
 
   it('does not flag WALL_TOO_THICK for a solid object', () => {
     const issues = validate(
-      params({ objects: [obj({ solid: true, diameter: 48, wallThickness: 24 })] }),
+      params({
+        objects: [
+          obj({
+            shape: 'star',
+            solid: true,
+            objectDiameter: 5,
+            padding: 0,
+            wallThickness: 4,
+          }),
+        ],
+      }),
     );
     expect(issues.some((i) => i.code === 'WALL_TOO_THICK')).toBe(false);
   });
@@ -47,7 +64,10 @@ describe('validate', () => {
   });
 
   it('warns OBJECT_EXCEEDS_DEPTH when an object is wider than the plate', () => {
-    const issues = validate(params({ baseDepth: 40, objects: [obj({ diameter: 48 })] }));
+    // objectDiameter 36 + padding 4 + 2*4 wall = 48 printed, deeper than 40.
+    const issues = validate(
+      params({ baseDepth: 40, objects: [obj({ objectDiameter: 36 })] }),
+    );
     expect(issues.some((i) => i.code === 'OBJECT_EXCEEDS_DEPTH')).toBe(true);
   });
 
@@ -55,7 +75,7 @@ describe('validate', () => {
     const issues = validate(
       params({
         baseLength: 80,
-        objects: [obj({ diameter: 48 }), obj({ diameter: 48 })],
+        objects: [obj({ objectDiameter: 36 }), obj({ objectDiameter: 36 })],
       }),
     );
     expect(issues.some((i) => i.code === 'OBJECTS_OVERLAP')).toBe(true);

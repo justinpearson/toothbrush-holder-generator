@@ -7,9 +7,10 @@ export const LIMITS = {
   baseLength: { min: 40, max: 400, step: 1 },
   baseDepth: { min: 30, max: 200, step: 1 },
   baseHeight: { min: 2, max: 40, step: 1 },
-  diameter: { min: 10, max: 120, step: 1 },
+  objectDiameter: { min: 5, max: 110, step: 1 },
   height: { min: 5, max: 200, step: 1 },
   wallThickness: { min: 1, max: 12, step: 0.5 },
+  padding: { min: 0, max: 20, step: 0.5 },
   objectCount: { min: 1, max: 12, step: 1 },
   // Shape-specific:
   eccentricity: { min: 0, max: 0.9, step: 0.05 },
@@ -80,7 +81,7 @@ export function validate(params: HolderParams): ValidationIssue[] {
   for (let i = 0; i < objects.length - 1; i++) {
     const a = objects[i];
     const b = objects[i + 1];
-    if (a.diameter / 2 + b.diameter / 2 > s) {
+    if (a.outerDiameter / 2 + b.outerDiameter / 2 > s) {
       issues.push({
         level: 'warning',
         code: 'OBJECTS_OVERLAP',

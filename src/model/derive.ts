@@ -4,7 +4,7 @@ import {
   outlinePoints,
   type OutlineParams,
 } from '../geometry/crossSection';
-import { effective } from './resolve';
+import { effective, outerDiameterOf } from './resolve';
 import type { DerivedObject, HolderObject, HolderParams } from './types';
 
 /** Center-to-center spacing of evenly distributed objects along X. */
@@ -17,15 +17,15 @@ export function objectCenterX(i: number, baseLength: number, n: number): number 
   return spacing(baseLength, n) * (i + 0.5);
 }
 
-/** Build the OutlineParams for an object given its resolved diameter and $fn. */
+/** Build the OutlineParams for an object given its printed outer diameter and $fn. */
 export function toOutlineParams(
   obj: Pick<HolderObject, 'shape' | 'shapeParams'>,
-  diameter: number,
+  outerDiameter: number,
   fn: number,
 ): OutlineParams {
   return {
     shape: obj.shape,
-    diameter,
+    diameter: outerDiameter,
     eccentricity: obj.shapeParams.eccentricity,
     sides: obj.shapeParams.sides,
     points: obj.shapeParams.points,
@@ -40,7 +40,8 @@ export function deriveObjects(params: HolderParams): DerivedObject[] {
   const centerY = params.baseDepth / 2;
   return params.objects.map((obj, index) => {
     const sizes = effective(obj, params.globals);
-    const op = toOutlineParams(obj, sizes.diameter, params.fn);
+    const outerDiameter = outerDiameterOf(sizes, obj.solid);
+    const op = toOutlineParams(obj, outerDiameter, params.fn);
     const outer = outlinePoints(op);
     const degenerate = innerIsDegenerate(op, sizes.wallThickness);
     const inner =
@@ -51,9 +52,11 @@ export function deriveObjects(params: HolderParams): DerivedObject[] {
       shape: obj.shape,
       shapeParams: obj.shapeParams,
       solid: obj.solid,
-      diameter: sizes.diameter,
+      objectDiameter: sizes.objectDiameter,
       height: sizes.height,
       wallThickness: sizes.wallThickness,
+      padding: sizes.padding,
+      outerDiameter,
       centerX: objectCenterX(index, params.baseLength, n),
       centerY,
       outer,

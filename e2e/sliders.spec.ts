@@ -59,20 +59,20 @@ test('making a tube solid removes its bore outline', async ({ page }) => {
 
 test('an override toggle enables the per-object slider', async ({ page }) => {
   const card = page.getByTestId('object-card').first();
-  // Object 1 inherits its diameter by default — the slider shows the global
-  // value but is disabled until the override box is checked.
-  const diameter = card.getByLabel('Diameter', { exact: true });
+  // Object 1 inherits its object diameter by default — the slider shows the
+  // global value but is disabled until the override box is checked.
+  const diameter = card.getByLabel('Object diameter', { exact: true });
   await expect(diameter).toBeDisabled();
-  await expect(diameter).toHaveValue('48');
-  await card.getByLabel('Override global diameter').check();
+  await expect(diameter).toHaveValue('36');
+  await card.getByLabel('Override global object diameter').check();
   await expect(diameter).toBeEnabled();
 });
 
 test('changing a global default moves an inheriting object', async ({ page }) => {
-  // Object 4 inherits the global diameter.
+  // Object 4 inherits the global object diameter.
   const outer = page.getByTestId('top-object').nth(3).locator('[data-role="outer"]');
   const before = await outer.getAttribute('points');
   const globals = page.locator('section[aria-label="Global defaults"]');
-  await globals.getByLabel('Diameter', { exact: true }).fill('90');
+  await globals.getByLabel('Object diameter', { exact: true }).fill('90');
   await expect.poll(() => outer.getAttribute('points')).not.toBe(before);
 });

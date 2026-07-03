@@ -9,9 +9,10 @@ export const DEFAULT_SHAPE_PARAMS: ShapeParams = {
 };
 
 export const DEFAULT_GLOBALS = {
-  diameter: 48,
+  objectDiameter: 36,
   height: 25,
   wallThickness: 4,
+  padding: 4,
 };
 
 let objectSeq = 0;
@@ -22,15 +23,18 @@ function makeObject(overrides: Partial<HolderObject> = {}): HolderObject {
     shape: 'circle',
     shapeParams: { ...DEFAULT_SHAPE_PARAMS },
     solid: false,
-    diameter: null,
+    objectDiameter: null,
     height: null,
     wallThickness: null,
+    padding: null,
     ...overrides,
   };
 }
 
-// Mirrors the v1 model (250 x 85 x 10 base, wall 4, four circular tubes; the first
-// is taller). Sizes that match a global are left as null so they inherit.
+// Mirrors the v1 model (250 x 85 x 10 base, wall 4, four circular tubes; the
+// first is taller). Printed outer sizes stay 48/42/42/48: object + padding +
+// 2*wall = 36+4+8 = 48 and 30+4+8 = 42. Sizes that match a global are left
+// null so they inherit.
 export const DEFAULT_PARAMS: HolderParams = {
   baseLength: 250,
   baseDepth: 85,
@@ -38,10 +42,10 @@ export const DEFAULT_PARAMS: HolderParams = {
   fn: 96,
   globals: { ...DEFAULT_GLOBALS },
   objects: [
-    makeObject({ height: 50 }), // tall, diameter 48 (inherited)
-    makeObject({ diameter: 42 }),
-    makeObject({ diameter: 42 }),
-    makeObject({}), // 48 x 25, all inherited
+    makeObject({ height: 50 }), // tall, outer 48 (inherited)
+    makeObject({ objectDiameter: 30 }),
+    makeObject({ objectDiameter: 30 }),
+    makeObject({}), // outer 48 x 25, all inherited
   ],
 };
 

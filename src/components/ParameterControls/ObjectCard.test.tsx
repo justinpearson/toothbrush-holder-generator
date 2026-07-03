@@ -27,9 +27,10 @@ function makeObject(overrides: Partial<HolderObject> = {}): HolderObject {
     shape: 'circle',
     shapeParams: { ...DEFAULT_SHAPE_PARAMS },
     solid: false,
-    diameter: null,
+    objectDiameter: null,
     height: null,
     wallThickness: null,
+    padding: null,
     ...overrides,
   };
 }
@@ -46,10 +47,10 @@ function renderCard(object: HolderObject) {
     />,
   );
   const diameter = container.querySelector<HTMLInputElement>(
-    'input[type="number"][aria-label="Diameter"]',
+    'input[type="number"][aria-label="Object diameter"]',
   )!;
   const toggle = container.querySelector<HTMLInputElement>(
-    'input[type="checkbox"][aria-label="Override global diameter"]',
+    'input[type="checkbox"][aria-label="Override global object diameter"]',
   )!;
   return { container, controls, diameter, toggle };
 }
@@ -59,7 +60,7 @@ describe('ObjectCard override rows', () => {
     const { container, diameter, toggle } = renderCard(makeObject());
     expect(diameter).not.toBeNull();
     expect(diameter.disabled).toBe(true);
-    expect(diameter.value).toBe(String(DEFAULT_PARAMS.globals.diameter));
+    expect(diameter.value).toBe(String(DEFAULT_PARAMS.globals.objectDiameter));
     expect(toggle.checked).toBe(false);
     expect(container.textContent).toContain('Inheriting the global value');
   });
@@ -69,13 +70,13 @@ describe('ObjectCard override rows', () => {
     clickElement(toggle);
     expect(controls.setOverride).toHaveBeenCalledWith(
       'obj-1',
-      'diameter',
-      DEFAULT_PARAMS.globals.diameter,
+      'objectDiameter',
+      DEFAULT_PARAMS.globals.objectDiameter,
     );
   });
 
   it('shows an overridden size as an enabled slider with its own value', () => {
-    const { diameter, toggle } = renderCard(makeObject({ diameter: 15 }));
+    const { diameter, toggle } = renderCard(makeObject({ objectDiameter: 15 }));
     expect(diameter.disabled).toBe(false);
     expect(diameter.value).toBe('15');
     expect(toggle.checked).toBe(true);
@@ -85,8 +86,12 @@ describe('ObjectCard override rows', () => {
   });
 
   it('unchecking the override box reverts to inheriting', () => {
-    const { controls, toggle } = renderCard(makeObject({ diameter: 15 }));
+    const { controls, toggle } = renderCard(makeObject({ objectDiameter: 15 }));
     clickElement(toggle);
-    expect(controls.setOverride).toHaveBeenCalledWith('obj-1', 'diameter', null);
+    expect(controls.setOverride).toHaveBeenCalledWith(
+      'obj-1',
+      'objectDiameter',
+      null,
+    );
   });
 });

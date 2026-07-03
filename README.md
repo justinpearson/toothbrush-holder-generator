@@ -16,10 +16,13 @@ _Click the demo above to watch the full-quality video ([`images/demo.mp4`](image
 
 A web app for designing a parametric toothbrush holder. Move sliders to set the
 baseplate size and, for each object, its **shape** (circle, ellipse, polygon, or star),
-whether it's a **solid** post or a **hollow tube**, and its diameter / height / wall —
-either from **global defaults** or overridden per object. Watch the top, side, and 3D
-views update live, preview different filament colors, then download an OpenSCAD `.scad`
-file and a ready-to-print binary `.stl`.
+whether it's a **solid** post or a **hollow tube**, and its sizes — either from
+**global defaults** or overridden per object. Sizes are specified from the item being
+held: you enter the **object diameter** (e.g. a 26 mm toothbrush) plus a **padding**
+clearance, and a tube's bore is `object diameter + padding` with the printed outer size
+adding a **wall thickness** on each side (a solid post is simply `object diameter`
+wide). Watch the top, side, and 3D views update live, preview different filament
+colors, then download an OpenSCAD `.scad` file and a ready-to-print binary `.stl`.
 
 It grew out of a one-off model (`toothbrush-holder-3d-model/`) that was hand-drawn,
 turned into a `.scad`, rendered to `.stl` with OpenSCAD, and printed on a Bambu P1S.

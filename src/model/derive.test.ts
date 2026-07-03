@@ -9,9 +9,10 @@ function obj(overrides: Partial<HolderObject>): HolderObject {
     shape: 'circle',
     shapeParams: { ...DEFAULT_SHAPE_PARAMS },
     solid: false,
-    diameter: null,
+    objectDiameter: null,
     height: null,
     wallThickness: null,
+    padding: null,
     ...overrides,
   };
 }
@@ -29,10 +30,32 @@ describe('deriveObjects', () => {
   it('resolves overrides against globals', () => {
     const d = deriveObjects(DEFAULT_PARAMS);
     expect(d).toHaveLength(4);
-    expect(d.map((o) => o.diameter)).toEqual([48, 42, 42, 48]);
+    expect(d.map((o) => o.objectDiameter)).toEqual([36, 30, 30, 36]);
     expect(d.map((o) => o.height)).toEqual([50, 25, 25, 25]);
     d.forEach((o) => expect(o.wallThickness).toBe(4));
+    d.forEach((o) => expect(o.padding).toBe(4));
     d.forEach((o) => expect(o.centerY).toBe(DEFAULT_PARAMS.baseDepth / 2));
+  });
+
+  it('a tube is printed objectDiameter + padding + 2*wall wide', () => {
+    // 36 + 4 + 2*4 = 48 and 30 + 4 + 2*4 = 42 (the v1 outer sizes).
+    const d = deriveObjects(DEFAULT_PARAMS);
+    expect(d.map((o) => o.outerDiameter)).toEqual([48, 42, 42, 48]);
+  });
+
+  it("a tube's bore is exactly objectDiameter + padding wide", () => {
+    // Circle bore radius = outer R - wall = (36 + 4)/2 = 20.
+    const d = deriveObjects(DEFAULT_PARAMS);
+    const boreXs = d[0].inner!.map(([x]) => x);
+    expect(Math.max(...boreXs)).toBeCloseTo(20, 10);
+  });
+
+  it("a solid object's outer diameter is the object diameter itself", () => {
+    const params: HolderParams = {
+      ...DEFAULT_PARAMS,
+      objects: [obj({ solid: true, objectDiameter: 15 })],
+    };
+    expect(deriveObjects(params)[0].outerDiameter).toBe(15);
   });
 
   it('computes outer and inner outlines for a circle tube', () => {
@@ -50,11 +73,15 @@ describe('deriveObjects', () => {
     expect(deriveObjects(params)[0].inner).toBeNull();
   });
 
-  it('a too-thick wall yields a null inner outline', () => {
+  it('a wall too thick for the shape yields a null inner outline', () => {
+    // A small star: inner radius R*pointDepth - wall goes negative even
+    // though the wall wraps around the outside (circles can no longer
+    // degenerate, but star/polygon bores still can).
     const params: HolderParams = {
       ...DEFAULT_PARAMS,
-      globals: { ...DEFAULT_PARAMS.globals, wallThickness: 30 },
-      objects: [obj({ diameter: 48 })],
+      objects: [
+        obj({ shape: 'star', objectDiameter: 5, padding: 0, wallThickness: 4 }),
+      ],
     };
     expect(deriveObjects(params)[0].inner).toBeNull();
   });

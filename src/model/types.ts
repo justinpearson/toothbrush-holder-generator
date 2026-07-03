@@ -25,21 +25,30 @@ export interface HolderObject {
   shapeParams: ShapeParams;
   /** true = solid filled prism; false = hollow blind tube. */
   solid: boolean;
-  /** Overall diameter, mm. null = inherit the global default. */
-  diameter: number | null;
+  /**
+   * Diameter of the item this holder holds (e.g. a toothbrush), mm. For a
+   * tube, the bore is objectDiameter + padding and the printed outer size is
+   * objectDiameter + padding + 2*wallThickness. For a solid, the prism itself
+   * is objectDiameter wide. null = inherit the global default.
+   */
+  objectDiameter: number | null;
   /** Height above the baseplate top, mm. null = inherit global. */
   height: number | null;
   /** Wall thickness, mm (tubes only). null = inherit global. */
   wallThickness: number | null;
+  /** Clearance around the held item so it slides in easily, mm (tubes only).
+   *  null = inherit global. */
+  padding: number | null;
 }
 
 /** Size keys that can be a global default or a per-object override. */
-export type SizeKey = 'diameter' | 'height' | 'wallThickness';
+export type SizeKey = 'objectDiameter' | 'height' | 'wallThickness' | 'padding';
 
 export interface GlobalDefaults {
-  diameter: number;
+  objectDiameter: number;
   height: number;
   wallThickness: number;
+  padding: number;
 }
 
 export interface HolderParams {
@@ -64,9 +73,13 @@ export interface DerivedObject {
   shapeParams: ShapeParams;
   solid: boolean;
   /** Resolved (override ?? global) values. */
-  diameter: number;
+  objectDiameter: number;
   height: number;
   wallThickness: number;
+  padding: number;
+  /** Printed overall diameter: objectDiameter + padding + 2*wall for a tube,
+   *  objectDiameter for a solid. */
+  outerDiameter: number;
   centerX: number;
   centerY: number;
   /** Outer outline, centered at the object's own origin. */

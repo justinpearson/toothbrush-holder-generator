@@ -21,7 +21,7 @@ export function ObjectMesh({ object, baseTop, color }: ObjectMeshProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       object.shape,
-      object.diameter,
+      object.outerDiameter,
       object.height,
       object.wallThickness,
       object.solid,
