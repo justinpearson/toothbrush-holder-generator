@@ -11,6 +11,7 @@ export function GlobalControls({ controls }: { controls: HolderControls }) {
     <section className="controls__group" aria-label="Global defaults">
       <Collapsible
         title="Global defaults"
+        stateKey="globals"
         summary={`⌀ ${g.objectDiameter} · pad ${g.padding} · h ${g.height} · wall ${g.wallThickness}`}
         className="collapsible--section"
       >

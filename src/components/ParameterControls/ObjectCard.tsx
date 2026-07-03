@@ -19,11 +19,14 @@ const SHAPES: { value: ShapeKind; label: string }[] = [
 /** A bordered collapsible panel around one object attribute. */
 function AttrPanel({
   title,
+  stateKey,
   summary,
   className,
   children,
 }: {
   title: string;
+  /** Stable identity for the collapse store (scoped by object id). */
+  stateKey: string;
   /** Current value, shown in the header while collapsed. */
   summary: string;
   className?: string;
@@ -32,6 +35,7 @@ function AttrPanel({
   return (
     <Collapsible
       title={title}
+      stateKey={stateKey}
       summary={summary}
       className={`attr${className ? ` ${className}` : ''}`}
     >
@@ -68,6 +72,7 @@ function OverrideRow({
   return (
     <AttrPanel
       title={label}
+      stateKey={`${objectId}:${sizeKey}`}
       summary={`${value ?? globalValue} mm${overridden ? '' : ' (global)'}`}
       className="override"
     >
@@ -124,6 +129,7 @@ export function ObjectCard({
     <div className="object-card" data-testid="object-card">
       <Collapsible
         title={`Object ${index + 1}`}
+        stateKey={`object:${object.id}`}
         summary={`${shapeLabel} · ${object.solid ? 'Solid' : 'Tube'}`}
         className="collapsible--card"
         actions={
@@ -173,6 +179,7 @@ export function ObjectCard({
         {object.shape === 'ellipse' && (
           <AttrPanel
             title="Eccentricity"
+            stateKey={`${object.id}:eccentricity`}
             summary={`${object.shapeParams.eccentricity}`}
           >
             <Slider
@@ -186,7 +193,11 @@ export function ObjectCard({
           </AttrPanel>
         )}
         {object.shape === 'polygon' && (
-          <AttrPanel title="Sides" summary={`${object.shapeParams.sides}`}>
+          <AttrPanel
+            title="Sides"
+            stateKey={`${object.id}:sides`}
+            summary={`${object.shapeParams.sides}`}
+          >
             <Slider
               label="Sides"
               value={object.shapeParams.sides}
@@ -199,7 +210,11 @@ export function ObjectCard({
         )}
         {object.shape === 'star' && (
           <>
-            <AttrPanel title="Points" summary={`${object.shapeParams.points}`}>
+            <AttrPanel
+              title="Points"
+              stateKey={`${object.id}:points`}
+              summary={`${object.shapeParams.points}`}
+            >
               <Slider
                 label="Points"
                 value={object.shapeParams.points}
@@ -211,6 +226,7 @@ export function ObjectCard({
             </AttrPanel>
             <AttrPanel
               title="Point depth"
+              stateKey={`${object.id}:pointDepth`}
               summary={`${object.shapeParams.pointDepth}`}
             >
               <Slider

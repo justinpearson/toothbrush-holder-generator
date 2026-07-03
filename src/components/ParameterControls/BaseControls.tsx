@@ -9,6 +9,7 @@ export function BaseControls({ controls }: { controls: HolderControls }) {
     <section className="controls__group" aria-label="Baseplate">
       <Collapsible
         title="Baseplate"
+        stateKey="baseplate"
         summary={`${params.baseLength} × ${params.baseDepth} × ${params.baseHeight} mm`}
         className="collapsible--section"
       >

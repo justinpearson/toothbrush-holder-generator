@@ -1,20 +1,23 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
+
+/** Central open/closed store for collapsible panels. */
+export interface CollapseStore {
+  isOpen: (key: string) => boolean;
+  toggle: (key: string) => void;
+}
 
 /**
- * "Expand all" signal: a counter bumped by the Expand all button. Every
- * Collapsible opens when it changes.
+ * Panels register under stable keys (e.g. "<objectId>:height"), so collapse
+ * state belongs to the object itself: it survives list reordering, removals,
+ * and panels unmounting (a tube's Padding panel while the object is Solid).
+ * Without a provider a Collapsible falls back to its own local state.
  */
-export const ExpandAllContext = createContext(0);
+export const CollapseContext = createContext<CollapseStore | null>(null);
 
 interface CollapsibleProps {
   title: string;
+  /** Stable identity in the CollapseContext store. */
+  stateKey: string;
   /** Extra detail shown in the header while collapsed (e.g. current value). */
   summary?: ReactNode;
   /** Rendered in the header outside the toggle button (e.g. a remove button). */
@@ -27,18 +30,18 @@ interface CollapsibleProps {
 /** A titled panel whose body collapses behind a chevron header. */
 export function Collapsible({
   title,
+  stateKey,
   summary,
   actions,
   defaultOpen = true,
   className,
   children,
 }: CollapsibleProps) {
-  const expandAllTick = useContext(ExpandAllContext);
-  const [open, setOpen] = useState(defaultOpen);
-  const mountTick = useRef(expandAllTick);
-  useEffect(() => {
-    if (expandAllTick !== mountTick.current) setOpen(true);
-  }, [expandAllTick]);
+  const store = useContext(CollapseContext);
+  const [localOpen, setLocalOpen] = useState(defaultOpen);
+  const open = store ? store.isOpen(stateKey) : localOpen;
+  const toggle = () =>
+    store ? store.toggle(stateKey) : setLocalOpen((o) => !o);
 
   return (
     <div className={`collapsible${className ? ` ${className}` : ''}`}>
@@ -47,7 +50,7 @@ export function Collapsible({
           type="button"
           className="collapsible__toggle"
           aria-expanded={open}
-          onClick={() => setOpen((o) => !o)}
+          onClick={toggle}
         >
           <span className="collapsible__chevron" aria-hidden="true">
             {open ? '▾' : '▸'}
