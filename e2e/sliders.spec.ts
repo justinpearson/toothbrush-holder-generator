@@ -57,12 +57,15 @@ test('making a tube solid removes its bore outline', async ({ page }) => {
   await expect(firstTop.locator('[data-role="inner"]')).toHaveCount(0);
 });
 
-test('an override toggle reveals a per-object slider', async ({ page }) => {
+test('an override toggle enables the per-object slider', async ({ page }) => {
   const card = page.getByTestId('object-card').first();
-  // Object 1 inherits its diameter by default — no diameter slider yet.
-  await expect(card.getByLabel('Diameter', { exact: true })).toHaveCount(0);
-  await card.getByLabel('Override Diameter').check();
-  await expect(card.getByLabel('Diameter', { exact: true })).toHaveCount(1);
+  // Object 1 inherits its diameter by default — the slider shows the global
+  // value but is disabled until the override box is checked.
+  const diameter = card.getByLabel('Diameter', { exact: true });
+  await expect(diameter).toBeDisabled();
+  await expect(diameter).toHaveValue('48');
+  await card.getByLabel('Override global diameter').check();
+  await expect(diameter).toBeEnabled();
 });
 
 test('changing a global default moves an inheriting object', async ({ page }) => {

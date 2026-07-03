@@ -24,7 +24,10 @@ interface OverrideRowProps {
   objectId: string;
 }
 
-/** One inheritable size: a checkbox toggles a per-object override slider. */
+/**
+ * One inheritable size. The slider is always visible: disabled at the global
+ * value while inheriting, enabled once "Override global …" is checked.
+ */
 function OverrideRow({
   label,
   sizeKey,
@@ -35,13 +38,26 @@ function OverrideRow({
 }: OverrideRowProps) {
   const overridden = value !== null;
   const limits = LIMITS[sizeKey];
+  const lowerLabel = label.toLowerCase();
   return (
     <div className="override">
+      <Slider
+        label={label}
+        value={value ?? globalValue}
+        {...limits}
+        disabled={!overridden}
+        onChange={(v) => controls.setOverride(objectId, sizeKey, v)}
+      />
+      {!overridden && (
+        <span className="override__inherited">
+          Inheriting the global value ({globalValue} mm)
+        </span>
+      )}
       <label className="override__toggle">
         <input
           type="checkbox"
           checked={overridden}
-          aria-label={`Override ${label}`}
+          aria-label={`Override global ${lowerLabel}`}
           onChange={(e) =>
             controls.setOverride(
               objectId,
@@ -50,18 +66,8 @@ function OverrideRow({
             )
           }
         />
-        <span>{label}</span>
+        <span>Override global {lowerLabel}</span>
       </label>
-      {overridden ? (
-        <Slider
-          label={label}
-          value={value}
-          {...limits}
-          onChange={(v) => controls.setOverride(objectId, sizeKey, v)}
-        />
-      ) : (
-        <span className="override__inherited">inherits {globalValue} mm</span>
-      )}
     </div>
   );
 }
