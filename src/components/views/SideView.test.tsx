@@ -1,7 +1,7 @@
+import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_PARAMS, DEFAULT_SHAPE_PARAMS } from '../../model/defaults';
 import type { HolderObject, HolderParams } from '../../model/types';
-import { renderInto } from '../../test/render';
 import { SideView } from './SideView';
 
 function singleObject(overrides: Partial<HolderObject>): HolderParams {
@@ -20,7 +20,7 @@ function singleObject(overrides: Partial<HolderObject>): HolderParams {
 }
 
 function objectDimensionLabel(params: HolderParams): string {
-  const { container } = renderInto(<SideView params={params} />);
+  const { container } = render(<SideView params={params} />);
   const text = container.querySelector('[data-testid="side-object"] text')!;
   return text.textContent ?? '';
 }
