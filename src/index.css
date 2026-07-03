@@ -109,6 +109,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.3rem;
 }
 .controls__header h2 {
   margin: 0;
@@ -311,7 +313,8 @@ body {
 .controls__reset {
   background: transparent;
   color: var(--accent);
-  padding: 0.3rem 0.6rem;
+  padding: 0.25rem 0.45rem;
+  font-size: 0.82rem;
 }
 .controls__add:disabled,
 .downloads__btn:disabled {

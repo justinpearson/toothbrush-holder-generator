@@ -84,4 +84,18 @@ describe('ParameterControls collapsing', () => {
     expect(screen.queryByLabelText('Length')).not.toBeNull();
     expect(within(card).queryByLabelText('Object diameter')).not.toBeNull();
   });
+
+  it('Collapse all closes every panel, and panels can reopen individually', () => {
+    render(<Harness />);
+    fireEvent.click(screen.getByRole('button', { name: 'Collapse all' }));
+    const toggles = screen
+      .queryAllByRole('button', { expanded: true })
+      .filter((b) => b.classList.contains('collapsible__toggle'));
+    expect(toggles).toHaveLength(0);
+    expect(screen.queryByLabelText('Length')).toBeNull();
+
+    // A single panel can still be reopened afterwards.
+    fireEvent.click(screen.getByRole('button', { name: /^Baseplate/ }));
+    expect(screen.queryByLabelText('Length')).not.toBeNull();
+  });
 });

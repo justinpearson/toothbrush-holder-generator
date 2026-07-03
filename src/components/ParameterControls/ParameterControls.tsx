@@ -51,6 +51,13 @@ export function ParameterControls({ controls }: { controls: HolderControls }) {
           <button
             type="button"
             className="controls__reset"
+            onClick={() => setCollapse({ overrides: {}, fallback: false })}
+          >
+            Collapse all
+          </button>
+          <button
+            type="button"
+            className="controls__reset"
             onClick={controls.reset}
           >
             Reset
